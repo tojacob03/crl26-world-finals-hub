@@ -1,0 +1,1256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CRL26 World Finals Hub</title>
+<meta name="description" content="Unofficial hub for the Clash Royale League 2026 World Finals in Shanghai: countdown, players, seeding scenarios and an interactive double elimination bracket.">
+<meta property="og:title" content="CRL26 World Finals Hub">
+<meta property="og:description" content="Countdown, players, seeding scenarios and an interactive bracket for the CRL 2026 World Finals in Shanghai.">
+<meta name="theme-color" content="#0B0F18">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230B0F18'/%3E%3Ctext x='16' y='22' text-anchor='middle' font-family='Arial Narrow,Arial,sans-serif' font-weight='700' font-size='16' fill='%23F3B53A'%3E26%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: broadcast hub. Sticky header, split hero (title | countdown), stacked dashboard sections, bracket on its own scroll stage. */
+:root{
+  --bg:#0B0F18; --surface:#111726; --surface-2:#182033; --line:#232D44; --line-2:#34405C;
+  --fg:#E9EDF5; --muted:#8C97AE; --dim:#5E6984;
+  --gold:#F3B53A; --blue:#5B93FF; --red:#F2605A; --teal:#3FC9B0; --gray:#A9B1C3;
+  --f-display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --f-body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --r:10px;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.5;margin:0;-webkit-font-smoothing:antialiased}
+img{max-width:100%}
+[hidden]{display:none!important}
+a{color:inherit}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.wrap{max-width:1240px;margin:0 auto;padding-inline:20px}
+@media (max-width:520px){.wrap{padding-inline:16px}}
+
+/* header */
+.top{position:sticky;top:0;z-index:40;background:var(--bg);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+.top .wrap{display:flex;align-items:center;gap:20px;height:58px}
+.brand{display:flex;align-items:baseline;gap:10px;text-decoration:none;white-space:nowrap}
+.brand b{font-family:var(--f-display);font-weight:800;font-size:22px;letter-spacing:.02em}
+.brand span{font-family:var(--f-mono);font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.nav{position:relative;display:flex;gap:2px;margin-left:auto;overflow-x:auto;scrollbar-width:none;min-width:0}
+.nav::-webkit-scrollbar{display:none}
+.nav a{position:relative;z-index:1;text-decoration:none;font-size:13px;font-weight:500;color:var(--muted);padding:7px 12px;border-radius:7px;white-space:nowrap;transition:color .2s}
+.nav a.on{color:var(--fg)}
+.nav .pill{position:absolute;z-index:0;top:0;left:0;height:100%;border-radius:7px;background:var(--surface-2);opacity:0}
+.lang{display:flex;gap:2px;padding:3px;background:var(--surface);border-radius:8px;flex:none}
+.lang button{border:0;background:none;cursor:pointer;font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;color:var(--muted);padding:5px 7px;border-radius:6px}
+.lang button:hover{color:var(--fg)}
+.lang button.on{background:var(--surface-2);color:var(--gold)}
+@media (max-width:860px){.brand span{display:none}.top .wrap{gap:10px}}
+@media (max-width:640px){.nav a{padding:7px 8px;font-size:12.5px}}
+
+/* hero */
+.hero{position:relative;border-bottom:1px solid var(--line);overflow:hidden}
+.hero canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.hero .wrap{position:relative;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:48px;padding-block:64px 56px;align-items:end}
+@media (max-width:900px){.hero .wrap{grid-template-columns:1fr;gap:32px;padding-block:44px 40px}}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}
+h1{font-family:var(--f-display);font-weight:800;font-size:clamp(46px,7.4vw,96px);line-height:.92;letter-spacing:-.005em;margin:14px 0 20px;text-wrap:balance;text-transform:uppercase}
+h1 .w{display:inline-block}
+.lede{color:var(--muted);max-width:56ch;margin:0;font-size:16px}
+.lede b{color:var(--fg);font-weight:500}
+.mix{margin-top:28px;max-width:560px}
+.mix-bar{display:flex;height:10px;gap:3px}
+.mix-bar i{display:block;height:100%;border-radius:2px}
+.mix-legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:10px;font-size:12.5px;color:var(--muted)}
+.mix-legend span{display:inline-flex;align-items:center;gap:7px}
+.mix-legend b{color:var(--fg);font-family:var(--f-mono);font-weight:600}
+.sw{display:inline-block;width:9px;height:9px;border-radius:2px;flex:none}
+
+.cd{position:relative;background:var(--surface);border-radius:14px;padding:26px 26px 22px}
+.cd svg.border{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.cd-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:12.5px;color:var(--muted)}
+.cd-head .status{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
+.cd-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0 20px}
+.cd-unit{background:var(--surface-2);border-radius:9px;padding:12px 6px 10px;text-align:center;overflow:hidden}
+.cd-num{display:block;font-family:var(--f-display);font-weight:800;font-size:clamp(40px,5.2vw,62px);line-height:1;font-variant-numeric:tabular-nums}
+.cd-lab{display:block;margin-top:6px;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.days{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.day{border-top:1px solid var(--line-2);padding-top:9px;font-size:12.5px;color:var(--muted)}
+.day b{display:block;color:var(--fg);font-weight:600;font-size:13.5px}
+.cd-note{margin:14px 0 0;font-size:12px;color:var(--dim)}
+
+/* sections */
+section.sec{padding-block:72px 8px}
+.sec-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:end;margin-bottom:28px}
+@media (max-width:820px){.sec-head{grid-template-columns:1fr}}
+h2{font-family:var(--f-display);font-weight:800;font-size:clamp(34px,4.4vw,52px);line-height:.95;text-transform:uppercase;margin:6px 0 0;text-wrap:balance}
+.sec-head p{margin:0;color:var(--muted);max-width:60ch}
+.kicker{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.panel{background:var(--surface);border-radius:var(--r);padding:20px}
+.panel h3{margin:0 0 4px;font-size:15px;font-weight:600}
+.panel .sub{margin:0 0 16px;font-size:12.5px;color:var(--muted)}
+
+/* participants */
+.roster{position:relative;display:grid;gap:30px}
+.roster .hl{position:absolute;top:0;left:0;border-radius:12px;background:var(--surface-2);opacity:0;pointer-events:none;z-index:0}
+.grp-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;margin-bottom:10px;position:relative;z-index:1}
+.grp-head h3{margin:0;font-family:var(--f-display);font-size:22px;font-weight:700;text-transform:uppercase;letter-spacing:.01em}
+.grp-head span{font-size:12.5px;color:var(--muted)}
+.cards{display:grid;gap:10px;position:relative;z-index:1}
+.c5{grid-template-columns:repeat(5,minmax(0,1fr))}
+.c4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:30px}
+.split .cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (max-width:980px){.c5{grid-template-columns:repeat(3,minmax(0,1fr))}.c4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:700px){.split{grid-template-columns:1fr}.c5{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:420px){.c5,.c4,.split .cards{grid-template-columns:1fr}}
+.pc{position:relative;border:1px solid var(--line);border-radius:12px;padding:14px 14px 13px;min-width:0;display:flex;flex-direction:column;gap:2px}
+.pc-top{display:flex;justify-content:space-between;align-items:center;gap:8px;font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;color:var(--muted)}
+.pc-top .tag{display:inline-flex;align-items:center;gap:6px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pc-name{font-family:var(--f-display);font-weight:800;font-size:27px;line-height:1.05;margin-top:8px;overflow-wrap:anywhere;text-transform:uppercase}
+.pc-team{font-size:12.5px;color:var(--muted)}
+.pc-foot{display:flex;justify-content:space-between;gap:8px;margin-top:12px;padding-top:9px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+.pc-foot b{font-family:var(--f-mono);color:var(--fg);font-weight:600}
+.pc.out{border-style:dashed}
+.pc.out .pc-name{color:var(--dim);text-decoration:line-through;text-decoration-thickness:2px}
+.pc.out .note{font-size:12px;color:var(--gold);margin-top:3px}
+
+/* seeding */
+.seed-layout{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:1000px){.seed-layout{grid-template-columns:1fr}}
+.tabs{position:relative;display:flex;gap:4px;padding:4px;background:var(--surface);border-radius:11px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs .ind{position:absolute;top:4px;left:0;height:calc(100% - 8px);border-radius:8px;background:var(--surface-2);border:1px solid var(--line-2);z-index:0}
+.tab{position:relative;z-index:1;flex:1 0 auto;border:0;background:none;cursor:pointer;padding:9px 14px;border-radius:8px;text-align:left;color:var(--muted);transition:color .2s}
+.tab b{display:block;font-size:13.5px;font-weight:600;white-space:nowrap}
+.tab small{display:block;font-family:var(--f-mono);font-size:11px;white-space:nowrap}
+.tab.on{color:var(--fg)}
+.tab.on small{color:var(--gold)}
+.scen-desc{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:start;margin:16px 2px 14px}
+.scen-desc p{margin:0;color:var(--muted);font-size:13.5px;max-width:64ch}
+.scen-desc p b{color:var(--fg);font-weight:500}
+@media (max-width:640px){.scen-desc{grid-template-columns:1fr}}
+.toggle{display:inline-flex;align-items:center;gap:10px;border:1px solid var(--line-2);background:var(--surface);border-radius:999px;padding:6px 12px 6px 6px;cursor:pointer;font-size:12.5px;color:var(--muted);white-space:nowrap;justify-self:start}
+.toggle .knob{width:30px;height:18px;border-radius:999px;background:var(--line-2);position:relative;transition:background .2s;flex:none}
+.toggle .knob::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:var(--fg);transition:transform .2s}
+.toggle[aria-pressed="true"] .knob{background:var(--gold)}
+.toggle[aria-pressed="true"] .knob::after{transform:translateX(12px);background:var(--bg)}
+.toggle span b{color:var(--fg);font-weight:500}
+
+.seed-table{background:var(--surface);border-radius:var(--r);overflow:hidden}
+.st-head,.srow{display:grid;grid-template-columns:44px minmax(0,1.25fr) minmax(0,1.1fr) minmax(0,1.15fr) 64px;gap:12px;align-items:center;padding:0 16px}
+.st-head{height:36px;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);border-bottom:1px solid var(--line)}
+.st-head span:last-child{text-align:right}
+.srow{width:100%;height:46px;border:0;background:var(--surface);border-bottom:1px solid var(--line);cursor:pointer;text-align:left}
+.srow:last-child{border-bottom:0}
+.srow:hover{background:var(--surface-2)}
+.srow.sel{background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--gold)}
+.srow .sd{font-family:var(--f-display);font-weight:800;font-size:24px;line-height:1}
+.srow .nm{display:flex;align-items:center;gap:9px;min-width:0;font-weight:600}
+.srow .nm span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.srow .nm em{font-style:normal;font-family:var(--f-mono);font-size:10.5px;color:var(--dim);font-weight:400}
+.srow .og,.srow .op{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.srow .op b{color:var(--fg);font-weight:500}
+.srow .pts{font-family:var(--f-mono);font-size:12px;text-align:right;font-variant-numeric:tabular-nums}
+@media (max-width:700px){.st-head,.srow{grid-template-columns:36px minmax(0,1fr) minmax(0,1fr) 52px;gap:10px;padding:0 12px}.st-head .h-og,.srow .og{display:none}}
+.swap-hint{font-size:12px;color:var(--dim);margin:10px 2px 0}
+
+.side{display:grid;gap:16px}
+.duel{display:grid;grid-template-columns:minmax(0,1fr) 44px;gap:4px 12px;align-items:center;font-size:13px;padding:7px 0;border-bottom:1px solid var(--line)}
+.duel:last-child{border-bottom:0}
+.duel .who{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.duel .who em{font-style:normal;color:var(--dim);margin:0 6px}
+.duel .pct{font-family:var(--f-mono);font-size:12px;text-align:right}
+.duel .bar{grid-column:1/-1;height:3px;background:var(--line);border-radius:2px;overflow:hidden}
+.duel .bar i{display:block;height:100%;background:var(--blue)}
+
+.strips{margin-top:16px}
+.strip-scroll{overflow-x:auto}
+.strip-tbl{min-width:760px;display:grid;gap:7px}
+.strip{display:grid;grid-template-columns:150px minmax(0,1fr);gap:14px;align-items:center}
+.strip .lab{font-size:12.5px;line-height:1.25}
+.strip .lab b{display:block;font-weight:600;font-size:13px}
+.strip .lab span{color:var(--muted);font-size:11.5px}
+.strip.now .lab b{color:var(--gold)}
+.cells{display:grid;grid-template-columns:repeat(16,minmax(0,1fr));gap:3px}
+.cell{position:relative;height:40px;border-radius:4px;display:flex;flex-direction:column;justify-content:center;align-items:center;font-family:var(--f-mono);line-height:1.1;color:var(--fg)}
+.cell small{font-size:9px;opacity:.75}
+.cell span{font-size:10.5px;font-weight:600}
+.cell.bye::after{content:"";position:absolute;left:4px;right:4px;top:3px;height:2px;background:var(--fg);border-radius:1px;opacity:.7}
+.cell.empty{background:none;border:1px dashed var(--line)}
+.strip.sep{border-top:1px solid var(--line);padding-top:9px;margin-top:4px}
+.cat-legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:14px;font-size:12px;color:var(--muted)}
+.cat-legend span{display:inline-flex;align-items:center;gap:6px}
+
+/* bracket */
+.bk-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
+.bk-bar .grow{flex:1 1 auto}
+.sel-wrap{position:relative}
+select{appearance:none;background:var(--surface);border:1px solid var(--line-2);color:var(--fg);border-radius:8px;padding:8px 34px 8px 12px;font:500 13px var(--f-body);cursor:pointer;max-width:100%}
+.sel-wrap::after{content:"";position:absolute;right:13px;top:50%;width:6px;height:6px;border-right:1.5px solid var(--muted);border-bottom:1.5px solid var(--muted);transform:translateY(-70%) rotate(45deg);pointer-events:none}
+.btn{border:1px solid var(--line-2);background:var(--surface);border-radius:8px;padding:8px 14px;font-size:13px;font-weight:500;cursor:pointer;transition:background .15s,border-color .15s}
+.btn:hover{background:var(--surface-2);border-color:var(--dim)}
+.btn.pri{background:var(--gold);border-color:var(--gold);color:#1A1405}
+.btn.pri:hover{background:#FFC555}
+.bk-help{font-size:12.5px;color:var(--muted)}
+.bk-stage{background:var(--surface);border-radius:12px;overflow-x:auto;overflow-y:hidden}
+.bracket{position:relative;margin:22px}
+.bracket svg{position:absolute;inset:0;overflow:visible;pointer-events:none}
+.bracket path{fill:none;stroke:var(--line-2);stroke-width:1.5}
+.bracket path.act{stroke:var(--muted)}
+.bracket path.hl{stroke:var(--gold);stroke-width:2}
+.colh{position:absolute;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.colh b{color:var(--fg);font-weight:600}
+.bk-div{position:absolute;left:0;height:1px;background:var(--line)}
+.m{position:absolute;width:176px}
+.m .ml{position:absolute;top:-17px;left:1px;font-family:var(--f-mono);font-size:10px;color:var(--dim);letter-spacing:.04em;white-space:nowrap}
+.m .box{background:var(--bg);border:1px solid var(--line-2);border-radius:7px;overflow:hidden}
+.m.final .box{border-color:var(--gold)}
+.r{display:grid;grid-template-columns:4px 20px minmax(0,1fr) auto;gap:7px;align-items:center;width:100%;height:28px;border:0;background:none;padding:0 8px 0 0;text-align:left;cursor:pointer;font-size:12.5px}
+.r+.r{border-top:1px solid var(--line)}
+.r .ct{width:4px;height:100%}
+.r .s{font-family:var(--f-mono);font-size:10.5px;color:var(--dim);text-align:right}
+.r .n{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
+.r .p{font-family:var(--f-mono);font-size:10.5px;color:var(--muted)}
+.r.ph{cursor:default}
+.r.ph .n{color:var(--dim);font-weight:400;font-size:11.5px}
+.r:not(.ph):hover{background:var(--surface-2)}
+.r.win{background:var(--surface-2)}
+.r.win .n{font-weight:600}
+.r.win .p{color:var(--bg);background:var(--gold);border-radius:3px;padding:1px 5px;font-weight:600}
+.r.lose .n,.r.lose .s{color:var(--dim)}
+.r.hl .n{color:var(--gold)}
+.m.off{opacity:.35}
+.places{margin-top:16px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:820px){.places{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.place{background:var(--surface);border-radius:var(--r);padding:12px 14px;min-width:0}
+.place .pl{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.place .pn{margin-top:4px;font-size:13px;line-height:1.45;min-height:19px}
+.place .pn i{font-style:normal;color:var(--dim)}
+.place.champ{background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--gold)}
+.place.champ .pn{font-family:var(--f-display);font-weight:800;font-size:28px;line-height:1.05;text-transform:uppercase}
+.place.champ .pl{color:var(--gold)}
+
+/* format */
+.fmt{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media (max-width:900px){.fmt{grid-template-columns:1fr}}
+.fmt .panel p{margin:0 0 10px;color:var(--muted);font-size:13.5px}
+.fmt .panel p:last-child{margin-bottom:0}
+.fmt .panel p b{color:var(--fg);font-weight:500}
+.kv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 14px;font-size:13px;margin:0}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0;font-weight:500}
+.big{font-family:var(--f-display);font-weight:800;font-size:40px;line-height:1;margin:2px 0 10px;text-transform:uppercase}
+
+footer{margin-top:72px;border-top:1px solid var(--line);padding-block:28px calc(40px + env(safe-area-inset-bottom,0px));color:var(--muted);font-size:12.5px}
+footer .wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px}
+@media (max-width:760px){footer .wrap{grid-template-columns:1fr}}
+footer p{margin:6px 0 0;max-width:60ch}
+footer ul{margin:6px 0 0;padding:0;list-style:none;display:grid;gap:4px}
+footer a{color:var(--fg);text-decoration-color:var(--line-2);text-underline-offset:3px}
+footer a:hover{text-decoration-color:var(--gold)}
+
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--surface-2);border:1px solid var(--line-2);border-radius:9px;padding:9px 14px;font-size:13px;z-index:60;opacity:0;pointer-events:none;max-width:calc(100vw - 32px);text-align:center}
+
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top"><b>CRL26</b><span>World Finals Hub</span></a>
+    <nav class="nav" id="nav">
+      <i class="pill"></i>
+      <a href="#top" data-i18n="nav.countdown">Countdown</a>
+      <a href="#players" data-i18n="nav.players">Players</a>
+      <a href="#seeding" data-i18n="nav.seeding">Seeding</a>
+      <a href="#bracket" data-i18n="nav.bracket">Bracket</a>
+      <a href="#format" data-i18n="nav.format">Format</a>
+    </nav>
+    <div class="lang" id="lang" role="group" aria-label="Language"></div>
+  </div>
+</header>
+
+<main>
+  <section class="hero" id="top">
+    <canvas id="dots" aria-hidden="true"></canvas>
+    <div class="wrap">
+      <div>
+        <div class="eyebrow">Clash Royale League 2026 · World Finals</div>
+        <h1 id="headline"></h1>
+        <p class="lede" data-i18n="hero.lede"></p>
+        <div class="mix">
+          <div class="mix-bar" id="mixBar"></div>
+          <div class="mix-legend" id="mixLegend"></div>
+        </div>
+      </div>
+      <div class="cd" id="cd">
+        <svg class="border" aria-hidden="true"><rect id="cdRect" x="0.5" y="0.5" rx="14" ry="14" pathLength="100" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-dasharray="7 93" stroke-linecap="round"/><rect id="cdRect2" x="0.5" y="0.5" rx="14" ry="14" fill="none" stroke="var(--line)" stroke-width="1"/></svg>
+        <div class="cd-head"><span id="cdLabel"></span><span class="status" id="cdStatus"></span></div>
+        <div class="cd-grid">
+          <div class="cd-unit"><span class="cd-num" id="cdD">00</span><span class="cd-lab" data-i18n="cd.days"></span></div>
+          <div class="cd-unit"><span class="cd-num" id="cdH">00</span><span class="cd-lab" data-i18n="cd.hours"></span></div>
+          <div class="cd-unit"><span class="cd-num" id="cdM">00</span><span class="cd-lab" data-i18n="cd.mins"></span></div>
+          <div class="cd-unit"><span class="cd-num" id="cdS">00</span><span class="cd-lab" data-i18n="cd.secs"></span></div>
+        </div>
+        <div class="days">
+          <div class="day" data-i18n="cd.d1"></div>
+          <div class="day" data-i18n="cd.d2"></div>
+          <div class="day" data-i18n="cd.d3"></div>
+        </div>
+        <p class="cd-note" data-i18n="cd.note"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="players">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><div class="kicker" data-i18n="pl.kicker"></div><h2 data-i18n="pl.h2"></h2></div>
+        <p data-i18n="pl.p"></p>
+      </div>
+      <div class="roster" id="roster"></div>
+    </div>
+  </section>
+
+  <section class="sec" id="seeding">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><div class="kicker" data-i18n="sd.kicker"></div><h2 data-i18n="sd.h2"></h2></div>
+        <p data-i18n="sd.p"></p>
+      </div>
+
+      <div class="tabs" id="scenTabs" role="tablist"><i class="ind"></i></div>
+
+      <div class="scen-desc">
+        <p id="scenText"></p>
+        <button class="toggle" id="inheritToggle" aria-pressed="true" type="button"><i class="knob"></i><span></span></button>
+      </div>
+
+      <div class="seed-layout">
+        <div>
+          <div class="seed-table">
+            <div class="st-head"><span>Seed</span><span data-i18n="sd.thPlayer"></span><span class="h-og" data-i18n="sd.thVia"></span><span data-i18n="sd.thOpp"></span><span data-i18n="sd.thPts"></span></div>
+            <div id="seedList"></div>
+          </div>
+          <p class="swap-hint" data-i18n="sd.swap"></p>
+        </div>
+        <div class="side">
+          <div class="panel">
+            <h3 data-i18n="sd.duelsH"></h3>
+            <p class="sub" data-i18n="sd.duelsSub"></p>
+            <div id="duels"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel strips">
+        <h3 data-i18n="sd.stripsH"></h3>
+        <p class="sub" data-i18n="sd.stripsSub"></p>
+        <div class="strip-scroll"><div class="strip-tbl" id="strips"></div></div>
+        <div class="cat-legend" id="catLegend"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="bracket">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><div class="kicker">Double Elimination</div><h2 data-i18n="bk.h2"></h2></div>
+        <p data-i18n="bk.p"></p>
+      </div>
+      <div class="bk-bar">
+        <div class="sel-wrap"><select id="bkScen" aria-label="Scenario"></select></div>
+        <button class="btn pri" id="bFav" type="button" data-i18n="bk.seeds"></button>
+        <button class="btn" id="bSim" type="button" data-i18n="bk.random"></button>
+        <button class="btn" id="bClr" type="button" data-i18n="bk.clear"></button>
+        <span class="grow"></span>
+        <span class="bk-help" data-i18n="bk.help"></span>
+      </div>
+      <div class="bk-stage"><div class="bracket" id="bk"></div></div>
+      <div class="places" id="places"></div>
+    </div>
+  </section>
+
+  <section class="sec" id="format">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><div class="kicker" data-i18n="fm.kicker"></div><h2 data-i18n="fm.h2"></h2></div>
+        <p data-i18n="fm.p"></p>
+      </div>
+      <div class="fmt">
+        <div class="panel">
+          <div class="kicker" data-i18n="fm.k1"></div>
+          <div class="big">Double Elim</div>
+          <p data-i18n="fm.p1a"></p>
+          <p data-i18n="fm.p1b"></p>
+        </div>
+        <div class="panel">
+          <div class="kicker" data-i18n="fm.k2"></div>
+          <div class="big">Manual Duels</div>
+          <p data-i18n="fm.p2a"></p>
+          <p data-i18n="fm.p2b"></p>
+        </div>
+        <div class="panel">
+          <div class="kicker" data-i18n="fm.k3"></div>
+          <div class="big">Shanghai</div>
+          <dl class="kv">
+            <dt data-i18n="fm.date"></dt><dd data-i18n="fm.dateV"></dd>
+            <dt data-i18n="fm.venue"></dt><dd data-i18n="fm.venueV"></dd>
+            <dt data-i18n="fm.prize"></dt><dd data-i18n="fm.prizeV"></dd>
+            <dt>Streams</dt><dd data-i18n="fm.streamsV"></dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <div class="kicker" data-i18n="ft.noteK"></div>
+      <p data-i18n="ft.note"></p>
+    </div>
+    <div>
+      <div class="kicker" data-i18n="ft.srcK"></div>
+      <ul>
+        <li><a href="https://quantumstudios.es/Rulebook_CRL_2026.pdf" target="_blank" rel="noopener" data-i18n="ft.rulebook"></a></li>
+        <li><a href="https://liquipedia.net/clashroyale/Clash_Royale_League/2026/World_Finals" target="_blank" rel="noopener">Liquipedia · CRL 2026 World Finals</a></li>
+        <li><a href="https://liquipedia.net/clashroyale/Clash_Royale_League/2026/Leaderboard" target="_blank" rel="noopener">Liquipedia · CRL 2026 Leaderboard</a></li>
+        <li><a href="https://x.com/EsportsRoyaleEN" target="_blank" rel="noopener" data-i18n="ft.x"></a></li>
+        <li><a href="https://royaleapi.com/blog/crl-2026-info" target="_blank" rel="noopener">RoyaleAPI · CRL 2026 Info</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Flip.min.js"></script>
+<script>
+(() => {
+const hasGsap = typeof window.gsap !== 'undefined';
+if (hasGsap && window.Flip) gsap.registerPlugin(Flip);
+const RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const anim = hasGsap && !RM;
+const $ = (s, r = document) => r.querySelector(s);
+const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- translations ---------- */
+const LANGS = ['en','de','fr','it'];
+const I18N = {
+en: {
+  'nav.countdown':"Countdown", 'nav.players':"Players", 'nav.seeding':"Seeding", 'nav.bracket':"Bracket", 'nav.format':"Format",
+  'hero.title':"Sixteen players. One title. Shanghai.",
+  'hero.lede':"<b>November 6–8, 2026</b> at the Shanghai Huangpu Inner Bund Culture Center (per rulebook). Double elimination, manual duels, Bo3, Bo5 from the upper final on. Seeding hasn't been announced yet. This hub plays through the most likely variants.",
+  'cd.toStart':"Until day 1 in Shanghai", 'cd.toEnd':"Until the end of day 3", 'cd.over':"The World Finals are over",
+  'cd.sCount':"Countdown", 'cd.sLive':"Live", 'cd.sOver':"Ended",
+  'cd.days':"Days", 'cd.hours':"Hours", 'cd.mins':"Minutes", 'cd.secs':"Seconds",
+  'cd.d1':"<b>Fri, Nov 6</b>Day 1", 'cd.d2':"<b>Sat, Nov 7</b>Day 2", 'cd.d3':"<b>Sun, Nov 8</b>Day 3 · Grand Final",
+  'cd.note':"Counting to 00:00 Shanghai time (UTC+8) on November 6. The start time of the first match hasn't been published yet.",
+  'pl.kicker':"Players", 'pl.h2':"The field is set",
+  'pl.p':"Five Monthly Final winners, eight players via the CRL leaderboard, two from the Champions Cup China and the LCQ winner. Asaf withdrew on September 11. Under rule 4.1.6.2, LCQ runner-up JorZ takes his place.",
+  'g.gtSub':"Winners of the five Monthly Finals, April to August",
+  'g.lbTitle':"Leaderboard Top 8", 'g.lbSub':"Best eight without a Golden Ticket · Morten ahead of Viiper on tiebreaker",
+  'g.cnSub':"Two spots for China", 'g.lcqSub':"Woo beat JorZ 3–0 in the final",
+  'c.noTeam':"no team", 'c.pts':"CRL points", 'c.out':"Withdrew Sep 11 · spot goes to JorZ",
+  'months':["April","May","June","July","August"],
+  'o.cn':"Champions Cup China", 'o.lcqWin':"LCQ winner", 'o.lcqFor':"LCQ runner-up · replaces Asaf", 'o.inherit':"LCQ runner-up · Asaf's seed",
+  'cat.gt':"Golden Ticket", 'cat.gts':"Golden Tickets", 'cat.lb':"Leaderboard", 'cat.cn':"China", 'cat.lcq':"LCQ", 'cat.cm':"Community",
+  'sd.kicker':"Seeding dashboard", 'sd.h2':"Who meets whom in round 1?",
+  'sd.p':"Rulebook v2.7 doesn't define World Finals seeding. The four variants are derived from 2023–2025 and the official lineup graphic. Percentages are an estimate, not an official figure.",
+  's.A':"2023 slots", 's.D':"Points ranking", 's.B':"2023 logic", 's.C':"Graphic order", 's.X':"Custom",
+  's.approx':"approx.", 's.viaSwap':"via swap",
+  's.A.t':"China fixed on <b>seeds 8 and 10</b> as in 2023, when the field also had 16 players. Monthly Final winners first in month order, then the leaderboard, LCQ winner last. Most likely variant, because Supercell seeded exactly like this in 2023.",
+  's.D.t':"All non-Chinese players by <b>total CRL points</b>, China again on 8 and 10. That's how 2025 worked, when the leaderboard set the order. SandBox moves ahead of Pedro, Sub ahead of Clown.",
+  's.B.t':"The <b>order</b> from 2023 instead of the fixed slots: Golden Tickets, China #1, Leaderboard #1, China #2, rest. With only five Golden Tickets, the Chinese players land on <b>6 and 8</b>.",
+  's.C.t':"Exactly the order of the <b>official lineup graphic</b>: Golden Tickets, Champions Cup, LCQ, then leaderboard #1–#8. That pushes the whole leaderboard to the back.",
+  's.X.t':"Your own seeding. It isn't included in the weighted figures.",
+  'tg.on':"JorZ takes <b>Asaf's seed</b>", 'tg.off':"JorZ seeded <b>behind Woo</b>",
+  'sd.thPlayer':"Player", 'sd.thVia':"Qualified via", 'sd.thOpp':"Round 1 opponent", 'sd.thPts':"Points",
+  'sd.swap':"Click two rows one after the other to swap their seeds. The result becomes the “Custom” scenario and goes straight into the bracket.",
+  'sd.duelsH':"Most likely round 1 matchups", 'sd.duelsSub':"Sum of the weights of all scenarios in which the matchup occurs",
+  'sd.stripsH':"Seed distribution compared", 'sd.stripsSub':"Which qualification type landed on which seed, and where it would land in the 2026 scenarios. A bar on top marks a bye.",
+  'st.23':"16 players · R1 in Bo1", 'st.24':"8 players", 'st.25':"12 players · top 4 with a bye",
+  'st.abbr':"MW = Monthly Winner · P = CRL points · CN = China",
+  'bk.h2':"Play the bracket",
+  'bk.p':"The bracket follows the selected scenario. Click a player to make them the winner, click again to undo. Losers drop into the lower bracket following the pattern of the 2026 LCQ.",
+  'bk.seeds':"Seeds", 'bk.random':"Random", 'bk.clear':"Clear",
+  'bk.help':"“Seeds”: higher seed wins · “Random”: every set 50:50",
+  'bk.r1':"Round 1", 'bk.r2':"Round 2", 'bk.r3':"Round 3", 'bk.qf':"Quarterfinal", 'bk.sf':"Semifinal",
+  'bk.winner':"Winner", 'bk.loser':"Loser", 'bk.grPh':"only if lower side wins the GF",
+  'pc.champ':"Champion", 'pc.2':"2nd place", 'pc.3':"3rd place", 'pc.4':"4th place", 'pc.56':"5th–6th", 'pc.78':"7th–8th", 'pc.912':"9th–12th", 'pc.1316':"13th–16th", 'pc.open':"open",
+  't.scen':"Scenario “{n}” · bracket filled by seed", 't.swap':"Swapped: {p}",
+  't.inhOn':"JorZ takes Asaf's leaderboard seed", 't.inhOff':"JorZ is seeded behind Woo as LCQ runner-up",
+  't.seeds':"Higher seed wins every match", 't.clear':"Bracket cleared · only round 1 is set", 't.rand':"Random run: {n} wins",
+  'fm.kicker':"Rules", 'fm.h2':"Format and facts",
+  'fm.p':"All details from the CRL 2026 rulebook, version 2.7 of August 23, 2026, and the Liquipedia World Finals page.",
+  'fm.k1':"Mode", 'fm.p1a':"<b>16 players</b>, upper and lower bracket. Lose twice and you're out.",
+  'fm.p1b':"Every round is Bo3. <b>Upper final, lower final and grand final are Bo5.</b> If the lower-bracket player wins the grand final, the bracket resets and a second Bo5 is played.",
+  'fm.k2':"Match, set, game", 'fm.p2a':"A <b>match</b> is played over three sets (Bo3) or five sets (Bo5). A <b>set</b> goes to whoever wins two games first.",
+  'fm.p2b':"Every game uses its own deck. No card may appear in more than one deck within a set.",
+  'fm.k3':"Event", 'fm.date':"Date", 'fm.dateV':"November 6–8, 2026", 'fm.venue':"Venue", 'fm.venueV':"Huangpu Inner Bund Culture Center (per rulebook)",
+  'fm.prize':"Prize pool", 'fm.prizeV':"to be announced (rulebook: TBC)", 'fm.streamsV':"Twitch, YouTube, TikTok · 8 languages",
+  'ft.noteK':"Note", 'ft.note':"Unofficial fan hub, not affiliated with Supercell. World Finals seeding hasn't been announced yet. Scenario weights are an estimate based on previous years, not an official figure. Venue per rulebook v2.7.",
+  'ft.srcK':"Sources", 'ft.rulebook':"CRL 2026 rulebook v2.7 (PDF)", 'ft.x':"Clash Royale Esports on X · lineup update Sep 11",
+},
+de: {
+  'nav.countdown':"Countdown", 'nav.players':"Teilnehmer", 'nav.seeding':"Seeding", 'nav.bracket':"Bracket", 'nav.format':"Format",
+  'hero.title':"Sechzehn Spieler. Ein Titel. Shanghai.",
+  'hero.lede':"<b>6. bis 8. November 2026</b> im Shanghai Huangpu Inner Bund Culture Center (laut Regelwerk). Double Elimination, Manual Duels, Bo3, ab Upper Final Bo5. Das Seeding ist noch nicht offiziell. Dieser Hub spielt die wahrscheinlichsten Varianten durch.",
+  'cd.toStart':"Bis Tag 1 in Shanghai", 'cd.toEnd':"Bis zum Ende von Tag 3", 'cd.over':"Die World Finals sind vorbei",
+  'cd.sCount':"Countdown", 'cd.sLive':"Läuft", 'cd.sOver':"Beendet",
+  'cd.days':"Tage", 'cd.hours':"Stunden", 'cd.mins':"Minuten", 'cd.secs':"Sekunden",
+  'cd.d1':"<b>Fr 6. Nov</b>Tag 1", 'cd.d2':"<b>Sa 7. Nov</b>Tag 2", 'cd.d3':"<b>So 8. Nov</b>Tag 3 · Grand Final",
+  'cd.note':"Gezählt bis 00:00 Uhr Shanghai-Zeit (UTC+8) am 6. November. Die Startzeit der ersten Partie ist noch nicht veröffentlicht.",
+  'pl.kicker':"Teilnehmer", 'pl.h2':"Das Feld steht",
+  'pl.p':"Fünf Monthly-Final-Sieger, acht Spieler über das CRL-Leaderboard, zwei aus dem Champions Cup China und der LCQ-Sieger. Asaf hat am 11. September abgesagt. Laut Regel 4.1.6.2 rückt der LCQ-Zweite JorZ nach.",
+  'g.gtSub':"Sieger der fünf Monthly Finals, April bis August",
+  'g.lbTitle':"Leaderboard Top 8", 'g.lbSub':"Beste acht ohne Golden Ticket · Morten vor Viiper per Tiebreaker",
+  'g.cnSub':"Zwei Plätze für China", 'g.lcqSub':"Woo gewann das Final 3:0 gegen JorZ",
+  'c.noTeam':"ohne Team", 'c.pts':"CRL-Punkte", 'c.out':"Abgemeldet am 11.09. · Platz geht an JorZ",
+  'months':["April","Mai","Juni","Juli","August"],
+  'o.cn':"Champions Cup China", 'o.lcqWin':"LCQ-Sieger", 'o.lcqFor':"LCQ-Zweiter · für Asaf", 'o.inherit':"LCQ-Zweiter · Seed von Asaf",
+  'cat.gt':"Golden Ticket", 'cat.gts':"Golden Tickets", 'cat.lb':"Leaderboard", 'cat.cn':"China", 'cat.lcq':"LCQ", 'cat.cm':"Community",
+  'sd.kicker':"Seeding-Dashboard", 'sd.h2':"Wer trifft in Runde 1 auf wen?",
+  'sd.p':"Das Regelwerk v2.7 regelt das Seeding der World Finals nicht. Die vier Varianten leiten sich aus 2023 bis 2025 und der offiziellen Lineup-Grafik ab. Die Prozentwerte sind eine Einschätzung, keine offizielle Angabe.",
+  's.A':"2023-Schema", 's.D':"Punkte-Ranking", 's.B':"2023-Logik", 's.C':"Grafik-Reihenfolge", 's.X':"Eigenes",
+  's.approx':"ca.", 's.viaSwap':"per Tausch",
+  's.A.t':"China fix auf <b>Seed 8 und 10</b> wie 2023, als das Feld ebenfalls 16 Spieler hatte. Davor die Monthly-Final-Sieger in Monatsreihenfolge, dahinter das Leaderboard, der LCQ-Sieger zuletzt. Wahrscheinlichste Variante, weil Supercell 2023 genau so verteilt hat.",
+  's.D.t':"Alle Nicht-China-Spieler nach <b>CRL-Gesamtpunkten</b>, China wieder auf 8 und 10. So lief es 2025, als das Leaderboard die Reihenfolge bestimmte. SandBox rutscht dadurch vor Pedro, Sub vor Clown.",
+  's.B.t':"Die <b>Reihenfolge</b> von 2023 statt der festen Plätze: Golden Tickets, China #1, Leaderboard #1, China #2, Rest. Mit nur fünf Golden Tickets landen die Chinesen dann auf <b>6 und 8</b>.",
+  's.C.t':"Exakt die Reihenfolge der <b>offiziellen Lineup-Grafik</b>: Golden Tickets, Champions Cup, LCQ, danach Leaderboard #1–#8. Das schiebt das gesamte Leaderboard ans Ende.",
+  's.X.t':"Dein eigenes Seeding. Es fließt nicht in die gewichteten Werte ein.",
+  'tg.on':"JorZ übernimmt <b>Asafs Seed</b>", 'tg.off':"JorZ startet <b>hinter Woo</b>",
+  'sd.thPlayer':"Spieler", 'sd.thVia':"Qualifiziert über", 'sd.thOpp':"Gegner Runde 1", 'sd.thPts':"Punkte",
+  'sd.swap':"Zwei Zeilen nacheinander anklicken tauscht die Seeds. Das Ergebnis landet im Szenario „Eigenes“ und geht direkt ins Bracket.",
+  'sd.duelsH':"Wahrscheinlichste Erstrunden-Duelle", 'sd.duelsSub':"Summe der Szenario-Gewichte, in denen das Duell vorkommt",
+  'sd.stripsH':"Seed-Verteilung im Vergleich", 'sd.stripsSub':"Welche Qualifikationsart auf welchem Seed landete und in den Szenarien für 2026 landen würde. Ein Strich oben markiert ein Freilos.",
+  'st.23':"16 Spieler · R1 im Bo1", 'st.24':"8 Spieler", 'st.25':"12 Spieler · Top 4 mit Freilos",
+  'st.abbr':"MW = Monthly Winner · P = CRL-Punkte · CN = China",
+  'bk.h2':"Bracket durchspielen",
+  'bk.p':"Das Bracket folgt dem gewählten Szenario. Klick auf einen Spieler macht ihn zum Sieger, ein zweiter Klick nimmt das zurück. Verlierer fallen nach dem Schema des LCQ 2026 ins Lower Bracket.",
+  'bk.seeds':"Seeds", 'bk.random':"Zufall", 'bk.clear':"Leeren",
+  'bk.help':"„Seeds“: der höher gesetzte Spieler gewinnt · „Zufall“: jedes Set 50:50",
+  'bk.r1':"Runde 1", 'bk.r2':"Runde 2", 'bk.r3':"Runde 3", 'bk.qf':"Viertelfinale", 'bk.sf':"Halbfinale",
+  'bk.winner':"Sieger", 'bk.loser':"Verlierer", 'bk.grPh':"nur nach Lower-Sieg im GF",
+  'pc.champ':"Champion", 'pc.2':"2. Platz", 'pc.3':"3. Platz", 'pc.4':"4. Platz", 'pc.56':"5.–6.", 'pc.78':"7.–8.", 'pc.912':"9.–12.", 'pc.1316':"13.–16.", 'pc.open':"offen",
+  't.scen':"Szenario „{n}“ · Bracket nach Seeds befüllt", 't.swap':"Getauscht: {p}",
+  't.inhOn':"JorZ übernimmt Asafs Leaderboard-Seed", 't.inhOff':"JorZ wird als LCQ-Zweiter hinter Woo gesetzt",
+  't.seeds':"Der höher gesetzte Spieler gewinnt jedes Match", 't.clear':"Bracket geleert · nur Runde 1 gesetzt", 't.rand':"Zufallslauf: {n} gewinnt",
+  'fm.kicker':"Regeln", 'fm.h2':"Format und Fakten",
+  'fm.p':"Alle Angaben aus dem CRL-2026-Regelwerk, Version 2.7 vom 23.08.2026, und der Liquipedia-Seite zu den World Finals.",
+  'fm.k1':"Modus", 'fm.p1a':"<b>16 Spieler</b>, Upper und Lower Bracket. Wer zweimal verliert, ist raus.",
+  'fm.p1b':"Alle Runden im Bo3. <b>Upper Final, Lower Final und Grand Final im Bo5.</b> Gewinnt der Spieler aus dem Lower Bracket das Grand Final, gibt es ein Bracket Reset mit einem zweiten Bo5.",
+  'fm.k2':"Match, Set, Spiel", 'fm.p2a':"Ein <b>Match</b> geht über drei Sets (Bo3) oder fünf Sets (Bo5). Ein <b>Set</b> gewinnt, wer zuerst zwei Spiele holt.",
+  'fm.p2b':"Jedes Spiel mit eigenem Deck. Keine Karte darf in mehr als einem Deck eines Sets vorkommen.",
+  'fm.k3':"Event", 'fm.date':"Datum", 'fm.dateV':"6.–8. November 2026", 'fm.venue':"Venue", 'fm.venueV':"Huangpu Inner Bund Culture Center (laut Regelwerk)",
+  'fm.prize':"Preisgeld", 'fm.prizeV':"noch offen (Regelwerk: TBC)", 'fm.streamsV':"Twitch, YouTube, TikTok · 8 Sprachen inkl. Deutsch",
+  'ft.noteK':"Hinweis", 'ft.note':"Inoffizieller Fan-Hub ohne Verbindung zu Supercell. Das Seeding der World Finals ist noch nicht veröffentlicht. Die Szenario-Gewichte sind eine Einschätzung aus den Vorjahren, keine offizielle Angabe. Venue laut Regelwerk v2.7.",
+  'ft.srcK':"Quellen", 'ft.rulebook':"CRL 2026 Regelwerk v2.7 (PDF)", 'ft.x':"Clash Royale Esports auf X · Lineup-Update vom 11.09.",
+},
+fr: {
+  'nav.countdown':"Compte à rebours", 'nav.players':"Joueurs", 'nav.seeding':"Seeding", 'nav.bracket':"Bracket", 'nav.format':"Format",
+  'hero.title':"Seize joueurs. Un titre. Shanghai.",
+  'hero.lede':"<b>Du 6 au 8 novembre 2026</b> au Shanghai Huangpu Inner Bund Culture Center (selon le règlement). Double élimination, Manual Duels, Bo3, Bo5 à partir de la finale de l'upper bracket. Le seeding n'est pas encore officiel. Ce hub explore les variantes les plus probables.",
+  'cd.toStart':"Jusqu'au jour 1 à Shanghai", 'cd.toEnd':"Jusqu'à la fin du jour 3", 'cd.over':"Les World Finals sont terminées",
+  'cd.sCount':"Compte à rebours", 'cd.sLive':"En cours", 'cd.sOver':"Terminé",
+  'cd.days':"Jours", 'cd.hours':"Heures", 'cd.mins':"Minutes", 'cd.secs':"Secondes",
+  'cd.d1':"<b>Ven. 6 nov.</b>Jour 1", 'cd.d2':"<b>Sam. 7 nov.</b>Jour 2", 'cd.d3':"<b>Dim. 8 nov.</b>Jour 3 · Grande finale",
+  'cd.note':"Décompte jusqu'à 00:00, heure de Shanghai (UTC+8), le 6 novembre. L'heure du premier match n'a pas encore été publiée.",
+  'pl.kicker':"Joueurs", 'pl.h2':"Le plateau est complet",
+  'pl.p':"Cinq vainqueurs de Monthly Final, huit joueurs via le classement CRL, deux issus de la Champions Cup Chine et le vainqueur du LCQ. Asaf s'est retiré le 11 septembre. Selon la règle 4.1.6.2, JorZ, finaliste du LCQ, prend sa place.",
+  'g.gtSub':"Vainqueurs des cinq Monthly Finals, d'avril à août",
+  'g.lbTitle':"Top 8 du classement", 'g.lbSub':"Les huit meilleurs sans Golden Ticket · Morten devant Viiper au départage",
+  'g.cnSub':"Deux places pour la Chine", 'g.lcqSub':"Woo a battu JorZ 3-0 en finale",
+  'c.noTeam':"sans équipe", 'c.pts':"Points CRL", 'c.out':"Retiré le 11/09 · place attribuée à JorZ",
+  'months':["avril","mai","juin","juillet","août"],
+  'o.cn':"Champions Cup Chine", 'o.lcqWin':"Vainqueur LCQ", 'o.lcqFor':"Finaliste LCQ · remplace Asaf", 'o.inherit':"Finaliste LCQ · seed d'Asaf",
+  'cat.gt':"Golden Ticket", 'cat.gts':"Golden Tickets", 'cat.lb':"Classement", 'cat.cn':"Chine", 'cat.lcq':"LCQ", 'cat.cm':"Communauté",
+  'sd.kicker':"Tableau de seeding", 'sd.h2':"Qui affronte qui au premier tour ?",
+  'sd.p':"Le règlement v2.7 ne fixe pas le seeding des World Finals. Les quatre variantes s'appuient sur 2023–2025 et le visuel officiel du lineup. Les pourcentages sont une estimation, pas une donnée officielle.",
+  's.A':"Schéma 2023", 's.D':"Classement aux points", 's.B':"Logique 2023", 's.C':"Ordre du visuel", 's.X':"Personnalisé",
+  's.approx':"env.", 's.viaSwap':"par échange",
+  's.A.t':"La Chine fixée sur les <b>seeds 8 et 10</b> comme en 2023, quand le plateau comptait aussi 16 joueurs. D'abord les vainqueurs de Monthly Final dans l'ordre des mois, puis le classement, le vainqueur du LCQ en dernier. Variante la plus probable, car Supercell a procédé exactement ainsi en 2023.",
+  's.D.t':"Tous les joueurs hors Chine selon leurs <b>points CRL totaux</b>, la Chine à nouveau en 8 et 10. C'était le principe en 2025, quand le classement fixait l'ordre. SandBox passe devant Pedro, Sub devant Clown.",
+  's.B.t':"L'<b>ordre</b> de 2023 plutôt que les places fixes : Golden Tickets, Chine #1, classement #1, Chine #2, le reste. Avec seulement cinq Golden Tickets, les Chinois se retrouvent en <b>6 et 8</b>.",
+  's.C.t':"Exactement l'ordre du <b>visuel officiel du lineup</b> : Golden Tickets, Champions Cup, LCQ, puis classement #1 à #8. Tout le classement est ainsi repoussé en fin de tableau.",
+  's.X.t':"Ton propre seeding. Il n'entre pas dans les valeurs pondérées.",
+  'tg.on':"JorZ reprend <b>le seed d'Asaf</b>", 'tg.off':"JorZ placé <b>derrière Woo</b>",
+  'sd.thPlayer':"Joueur", 'sd.thVia':"Qualifié via", 'sd.thOpp':"Adversaire tour 1", 'sd.thPts':"Points",
+  'sd.swap':"Clique sur deux lignes l'une après l'autre pour échanger leurs seeds. Le résultat devient le scénario « Personnalisé » et passe directement dans le bracket.",
+  'sd.duelsH':"Duels du 1er tour les plus probables", 'sd.duelsSub':"Somme des poids des scénarios où ce duel apparaît",
+  'sd.stripsH':"Répartition des seeds comparée", 'sd.stripsSub':"Quel type de qualification a obtenu quel seed, et où il atterrirait dans les scénarios 2026. Un trait en haut indique une exemption.",
+  'st.23':"16 joueurs · T1 en Bo1", 'st.24':"8 joueurs", 'st.25':"12 joueurs · top 4 exemptés",
+  'st.abbr':"MW = vainqueur mensuel · P = points CRL · CN = Chine",
+  'bk.h2':"Joue le bracket",
+  'bk.p':"Le bracket suit le scénario choisi. Clique sur un joueur pour le désigner vainqueur, un second clic annule. Les perdants tombent dans le lower bracket selon le schéma du LCQ 2026.",
+  'bk.seeds':"Seeds", 'bk.random':"Aléatoire", 'bk.clear':"Effacer",
+  'bk.help':"« Seeds » : le meilleur seed gagne · « Aléatoire » : chaque set à 50/50",
+  'bk.r1':"Tour 1", 'bk.r2':"Tour 2", 'bk.r3':"Tour 3", 'bk.qf':"Quart de finale", 'bk.sf':"Demi-finale",
+  'bk.winner':"Vainqueur", 'bk.loser':"Perdant", 'bk.grPh':"seulement si le lower gagne la GF",
+  'pc.champ':"Champion", 'pc.2':"2e place", 'pc.3':"3e place", 'pc.4':"4e place", 'pc.56':"5e–6e", 'pc.78':"7e–8e", 'pc.912':"9e–12e", 'pc.1316':"13e–16e", 'pc.open':"ouvert",
+  't.scen':"Scénario « {n} » · bracket rempli selon les seeds", 't.swap':"Échangés : {p}",
+  't.inhOn':"JorZ reprend le seed d'Asaf au classement", 't.inhOff':"JorZ est placé derrière Woo comme finaliste du LCQ",
+  't.seeds':"Le meilleur seed gagne chaque match", 't.clear':"Bracket vidé · seul le tour 1 est placé", 't.rand':"Tirage aléatoire : {n} gagne",
+  'fm.kicker':"Règles", 'fm.h2':"Format et infos",
+  'fm.p':"Toutes les infos viennent du règlement CRL 2026, version 2.7 du 23/08/2026, et de la page Liquipedia des World Finals.",
+  'fm.k1':"Format", 'fm.p1a':"<b>16 joueurs</b>, upper et lower bracket. Deux défaites et c'est fini.",
+  'fm.p1b':"Tous les tours en Bo3. <b>Finale upper, finale lower et grande finale en Bo5.</b> Si le joueur du lower bracket remporte la grande finale, le bracket est réinitialisé et un second Bo5 est joué.",
+  'fm.k2':"Match, set, partie", 'fm.p2a':"Un <b>match</b> se joue en trois sets (Bo3) ou cinq sets (Bo5). Un <b>set</b> revient au premier joueur à deux parties gagnées.",
+  'fm.p2b':"Chaque partie se joue avec son propre deck. Aucune carte ne peut figurer dans plus d'un deck d'un même set.",
+  'fm.k3':"Événement", 'fm.date':"Date", 'fm.dateV':"6–8 novembre 2026", 'fm.venue':"Lieu", 'fm.venueV':"Huangpu Inner Bund Culture Center (selon le règlement)",
+  'fm.prize':"Cash prize", 'fm.prizeV':"à venir (règlement : TBC)", 'fm.streamsV':"Twitch, YouTube, TikTok · 8 langues dont le français",
+  'ft.noteK':"Remarque", 'ft.note':"Hub de fans non officiel, sans lien avec Supercell. Le seeding des World Finals n'est pas encore annoncé. Les poids des scénarios sont une estimation fondée sur les années précédentes, pas une donnée officielle. Lieu selon le règlement v2.7.",
+  'ft.srcK':"Sources", 'ft.rulebook':"Règlement CRL 2026 v2.7 (PDF)", 'ft.x':"Clash Royale Esports sur X · mise à jour du lineup du 11/09",
+},
+it: {
+  'nav.countdown':"Countdown", 'nav.players':"Giocatori", 'nav.seeding':"Seeding", 'nav.bracket':"Bracket", 'nav.format':"Formato",
+  'hero.title':"Sedici giocatori. Un titolo. Shanghai.",
+  'hero.lede':"<b>6–8 novembre 2026</b> allo Shanghai Huangpu Inner Bund Culture Center (secondo il regolamento). Doppia eliminazione, Manual Duels, Bo3, Bo5 dalla finale dell'upper bracket. Il seeding non è ancora ufficiale. Questo hub esplora le varianti più probabili.",
+  'cd.toStart':"Al giorno 1 a Shanghai", 'cd.toEnd':"Alla fine del giorno 3", 'cd.over':"Le World Finals sono concluse",
+  'cd.sCount':"Countdown", 'cd.sLive':"In corso", 'cd.sOver':"Concluso",
+  'cd.days':"Giorni", 'cd.hours':"Ore", 'cd.mins':"Minuti", 'cd.secs':"Secondi",
+  'cd.d1':"<b>Ven 6 nov</b>Giorno 1", 'cd.d2':"<b>Sab 7 nov</b>Giorno 2", 'cd.d3':"<b>Dom 8 nov</b>Giorno 3 · Gran finale",
+  'cd.note':"Conteggio fino alle 00:00 ora di Shanghai (UTC+8) del 6 novembre. L'orario del primo match non è ancora stato pubblicato.",
+  'pl.kicker':"Giocatori", 'pl.h2':"I partecipanti sono definiti",
+  'pl.p':"Cinque vincitori delle Monthly Final, otto giocatori dalla classifica CRL, due dalla Champions Cup Cina e il vincitore dell'LCQ. Asaf si è ritirato l'11 settembre. In base alla regola 4.1.6.2 subentra JorZ, secondo classificato dell'LCQ.",
+  'g.gtSub':"Vincitori delle cinque Monthly Final, da aprile ad agosto",
+  'g.lbTitle':"Top 8 della classifica", 'g.lbSub':"I migliori otto senza Golden Ticket · Morten davanti a Viiper per spareggio",
+  'g.cnSub':"Due posti per la Cina", 'g.lcqSub':"Woo ha battuto JorZ 3-0 in finale",
+  'c.noTeam':"senza team", 'c.pts':"Punti CRL", 'c.out':"Ritirato l'11/09 · il posto va a JorZ",
+  'months':["aprile","maggio","giugno","luglio","agosto"],
+  'o.cn':"Champions Cup Cina", 'o.lcqWin':"Vincitore LCQ", 'o.lcqFor':"Secondo LCQ · sostituisce Asaf", 'o.inherit':"Secondo LCQ · seed di Asaf",
+  'cat.gt':"Golden Ticket", 'cat.gts':"Golden Ticket", 'cat.lb':"Classifica", 'cat.cn':"Cina", 'cat.lcq':"LCQ", 'cat.cm':"Community",
+  'sd.kicker':"Dashboard seeding", 'sd.h2':"Chi affronta chi al primo turno?",
+  'sd.p':"Il regolamento v2.7 non stabilisce il seeding delle World Finals. Le quattro varianti derivano dal 2023–2025 e dalla grafica ufficiale della lineup. Le percentuali sono una stima, non un dato ufficiale.",
+  's.A':"Schema 2023", 's.D':"Ranking a punti", 's.B':"Logica 2023", 's.C':"Ordine della grafica", 's.X':"Personalizzato",
+  's.approx':"ca.", 's.viaSwap':"tramite scambio",
+  's.A.t':"Cina fissa sui <b>seed 8 e 10</b> come nel 2023, quando i partecipanti erano anch'essi 16. Prima i vincitori delle Monthly Final in ordine di mese, poi la classifica, il vincitore dell'LCQ per ultimo. Variante più probabile, perché nel 2023 Supercell ha distribuito esattamente così.",
+  's.D.t':"Tutti i giocatori non cinesi per <b>punti CRL totali</b>, Cina di nuovo su 8 e 10. Così funzionava nel 2025, quando l'ordine lo decideva la classifica. SandBox passa davanti a Pedro, Sub davanti a Clown.",
+  's.B.t':"L'<b>ordine</b> del 2023 invece dei posti fissi: Golden Ticket, Cina #1, classifica #1, Cina #2, resto. Con soli cinque Golden Ticket i cinesi finiscono su <b>6 e 8</b>.",
+  's.C.t':"Esattamente l'ordine della <b>grafica ufficiale della lineup</b>: Golden Ticket, Champions Cup, LCQ, poi classifica #1–#8. Così l'intera classifica scivola in fondo.",
+  's.X.t':"Il tuo seeding personale. Non rientra nei valori ponderati.",
+  'tg.on':"JorZ eredita <b>il seed di Asaf</b>", 'tg.off':"JorZ parte <b>dietro Woo</b>",
+  'sd.thPlayer':"Giocatore", 'sd.thVia':"Qualificato tramite", 'sd.thOpp':"Avversario turno 1", 'sd.thPts':"Punti",
+  'sd.swap':"Clicca due righe una dopo l'altra per scambiare i seed. Il risultato diventa lo scenario “Personalizzato” e passa subito nel bracket.",
+  'sd.duelsH':"Sfide del primo turno più probabili", 'sd.duelsSub':"Somma dei pesi degli scenari in cui compare la sfida",
+  'sd.stripsH':"Distribuzione dei seed a confronto", 'sd.stripsSub':"Quale tipo di qualificazione ha ottenuto quale seed e dove finirebbe negli scenari 2026. Una linea in alto indica un bye.",
+  'st.23':"16 giocatori · T1 in Bo1", 'st.24':"8 giocatori", 'st.25':"12 giocatori · top 4 con bye",
+  'st.abbr':"MW = vincitore mensile · P = punti CRL · CN = Cina",
+  'bk.h2':"Gioca il bracket",
+  'bk.p':"Il bracket segue lo scenario scelto. Clicca un giocatore per farlo vincere, un secondo clic annulla. Gli sconfitti scendono nel lower bracket secondo lo schema dell'LCQ 2026.",
+  'bk.seeds':"Seed", 'bk.random':"Casuale", 'bk.clear':"Svuota",
+  'bk.help':"“Seed”: vince il seed più alto · “Casuale”: ogni set 50:50",
+  'bk.r1':"Turno 1", 'bk.r2':"Turno 2", 'bk.r3':"Turno 3", 'bk.qf':"Quarti", 'bk.sf':"Semifinale",
+  'bk.winner':"Vincitore", 'bk.loser':"Perdente", 'bk.grPh':"solo se il lower vince la GF",
+  'pc.champ':"Campione", 'pc.2':"2° posto", 'pc.3':"3° posto", 'pc.4':"4° posto", 'pc.56':"5°–6°", 'pc.78':"7°–8°", 'pc.912':"9°–12°", 'pc.1316':"13°–16°", 'pc.open':"aperto",
+  't.scen':"Scenario “{n}” · bracket compilato per seed", 't.swap':"Scambiati: {p}",
+  't.inhOn':"JorZ eredita il seed di Asaf in classifica", 't.inhOff':"JorZ viene messo dietro Woo come secondo dell'LCQ",
+  't.seeds':"Il seed più alto vince ogni match", 't.clear':"Bracket svuotato · impostato solo il turno 1", 't.rand':"Simulazione casuale: vince {n}",
+  'fm.kicker':"Regole", 'fm.h2':"Formato e fatti",
+  'fm.p':"Tutti i dati dal regolamento CRL 2026, versione 2.7 del 23/08/2026, e dalla pagina Liquipedia delle World Finals.",
+  'fm.k1':"Formato", 'fm.p1a':"<b>16 giocatori</b>, upper e lower bracket. Due sconfitte e sei fuori.",
+  'fm.p1b':"Tutti i turni in Bo3. <b>Finale upper, finale lower e gran finale in Bo5.</b> Se il giocatore del lower bracket vince la gran finale, c'è un bracket reset con un secondo Bo5.",
+  'fm.k2':"Match, set, partita", 'fm.p2a':"Un <b>match</b> si gioca su tre set (Bo3) o cinque set (Bo5). Un <b>set</b> lo vince chi arriva prima a due partite.",
+  'fm.p2b':"Ogni partita con un mazzo diverso. Nessuna carta può comparire in più di un mazzo dello stesso set.",
+  'fm.k3':"Evento", 'fm.date':"Data", 'fm.dateV':"6–8 novembre 2026", 'fm.venue':"Sede", 'fm.venueV':"Huangpu Inner Bund Culture Center (secondo il regolamento)",
+  'fm.prize':"Montepremi", 'fm.prizeV':"da definire (regolamento: TBC)", 'fm.streamsV':"Twitch, YouTube, TikTok · 8 lingue incluso l'italiano",
+  'ft.noteK':"Nota", 'ft.note':"Hub non ufficiale dei fan, senza legami con Supercell. Il seeding delle World Finals non è ancora stato annunciato. I pesi degli scenari sono una stima basata sugli anni precedenti, non un dato ufficiale. Sede secondo il regolamento v2.7.",
+  'ft.srcK':"Fonti", 'ft.rulebook':"Regolamento CRL 2026 v2.7 (PDF)", 'ft.x':"Clash Royale Esports su X · aggiornamento lineup dell'11/09",
+},
+};
+function t(key, vars) {
+  let v = I18N[state.lang]?.[key] ?? I18N.en[key] ?? key;
+  if (vars && typeof v === 'string') for (const k in vars) v = v.replace('{' + k + '}', vars[k]);
+  return v;
+}
+
+/* ---------- data ---------- */
+const CAT = {
+  gt:  {color:'var(--gold)'}, lb: {color:'var(--blue)'}, cn: {color:'var(--red)'},
+  lcq: {color:'var(--teal)'}, cm: {color:'var(--gray)'},
+};
+const P = {
+  'Mohamed Light': {cc:'EGY', team:null,            cat:'gt',  s:1, pts:2240},
+  'Pedro':         {cc:'BRA', team:'SK Calalas',    cat:'gt',  s:2, pts:1560},
+  'SandBox':       {cc:'KOR', team:'SK Calalas',    cat:'gt',  s:3, pts:1595},
+  'Clown':         {cc:'KOR', team:'Oddyssey',      cat:'gt',  s:4, pts:1445},
+  'Mugi':          {cc:'JPN', team:'Crazy Raccoon', cat:'gt',  s:5, pts:1355},
+  'Sub':           {cc:'BRA', team:'SK Calalas',    cat:'lb',  rank:1, pts:1505},
+  'adriel':        {cc:'DOM', team:'WeSports',      cat:'lb',  rank:2, pts:1425},
+  'Asaf':          {cc:'ISR', team:null,            cat:'lb',  rank:3, pts:1170, out:true},
+  'Ryley':         {cc:'CAN', team:null,            cat:'lb',  rank:4, pts:1140},
+  'Vitor75':       {cc:'POR', team:'Vatic Esports', cat:'lb',  rank:5, pts:1090},
+  'Guriko':        {cc:'JPN', team:null,            cat:'lb',  rank:6, pts:910},
+  'Morten':        {cc:'GER', team:'SK Gaming',     cat:'lb',  rank:7, pts:905},
+  'Viiper':        {cc:'FRA', team:'Joblife',       cat:'lb',  rank:8, pts:905},
+  'Hermit':        {cc:'CHN', team:null,            cat:'cn',  pts:null},
+  'Midnight':      {cc:'CHN', team:null,            cat:'cn',  pts:null},
+  'Woo':           {cc:'KOR', team:null,            cat:'lcq', pts:545},
+  'JorZ':          {cc:'ESP', team:'SK Calalas',    cat:'lcq', pts:550},
+};
+function origin(n, inSeeding) {
+  const p = P[n];
+  if (p.cat === 'gt') return `Monthly Final S${p.s} · ${t('months')[p.s - 1]}`;
+  if (p.cat === 'lb') return `${t('cat.lb')} #${p.rank}`;
+  if (p.cat === 'cn') return t('o.cn');
+  if (n === 'Woo') return t('o.lcqWin');
+  return inSeeding && state.inherit ? t('o.inherit') : t('o.lcqFor');
+}
+const FIELD = Object.keys(P).filter(n => !P[n].out);
+const PAIRS = [[1,16],[8,9],[4,13],[5,12],[2,15],[7,10],[3,14],[6,11]];
+const OPP = {}; PAIRS.forEach(([a,b]) => { OPP[a] = b; OPP[b] = a; });
+const SCEN = [{id:'A', w:.40}, {id:'D', w:.25}, {id:'B', w:.20}, {id:'C', w:.15}];
+const ALL_SCEN = [...SCEN, {id:'X'}];
+
+function buildSeeds(id, inherit) {
+  const GT = ['Mohamed Light','Pedro','SandBox','Clown','Mugi'];
+  const LB = inherit ? ['Sub','adriel','JorZ','Ryley','Vitor75','Guriko','Morten','Viiper']
+                     : ['Sub','adriel','Ryley','Vitor75','Guriko','Morten','Viiper'];
+  const LCQ = inherit ? ['Woo'] : ['Woo','JorZ'];
+  const CN = ['Hermit','Midnight'];
+  const fixChina = order => { const s = Array(16).fill(null); s[7] = CN[0]; s[9] = CN[1]; let k = 0; for (let i = 0; i < 16; i++) if (!s[i]) s[i] = order[k++]; return s; };
+  if (id === 'A') return fixChina([...GT, ...LB, ...LCQ]);
+  if (id === 'B') return [...GT, CN[0], LB[0], CN[1], ...LB.slice(1), ...LCQ];
+  if (id === 'C') return inherit ? [...GT, ...CN, 'Woo', ...LB] : [...GT, ...CN, 'Woo', 'JorZ', ...LB];
+  if (id === 'D') {
+    const val = n => (n === 'JorZ' && inherit) ? 1170 : P[n].pts;
+    return fixChina([...GT, ...LB, ...LCQ].sort((a, b) => val(b) - val(a)));
+  }
+}
+
+/* ---------- coin flip for random runs ---------- */
+function playSets(bo, rnd) {
+  const need = bo === 5 ? 3 : 2; let x = 0, y = 0;
+  while (x < need && y < need) (rnd() < .5) ? x++ : y++;
+  return [x, y];
+}
+
+/* ---------- bracket structure ---------- */
+const M = {}; const ORDER = [];
+const def = (id, src, bo, lab) => { M[id] = {id, src, bo, lab}; ORDER.push(id); };
+PAIRS.forEach((pr, i) => def('U'+(i+1), [{s:pr[0]},{s:pr[1]}], 3, 'R1-'+(i+1)));
+for (let k = 1; k <= 4; k++) def('UQ'+k, [{w:'U'+(2*k-1)},{w:'U'+(2*k)}], 3, 'QF'+k);
+for (let k = 1; k <= 4; k++) def('L'+k, [{l:'U'+(2*k-1)},{l:'U'+(2*k)}], 3, 'LR1-'+k);
+def('L5', [{l:'UQ4'},{w:'L1'}], 3, 'LR2-1'); def('L6', [{l:'UQ3'},{w:'L2'}], 3, 'LR2-2');
+def('L7', [{l:'UQ2'},{w:'L3'}], 3, 'LR2-3'); def('L8', [{l:'UQ1'},{w:'L4'}], 3, 'LR2-4');
+def('US1', [{w:'UQ1'},{w:'UQ2'}], 3, 'SF1'); def('US2', [{w:'UQ3'},{w:'UQ4'}], 3, 'SF2');
+def('L9', [{w:'L5'},{w:'L6'}], 3, 'LR3-1'); def('L10', [{w:'L7'},{w:'L8'}], 3, 'LR3-2');
+def('L11', [{l:'US1'},{w:'L9'}], 3, 'LQF1'); def('L12', [{l:'US2'},{w:'L10'}], 3, 'LQF2');
+def('UF', [{w:'US1'},{w:'US2'}], 5, 'Upper Final');
+def('L13', [{w:'L11'},{w:'L12'}], 3, 'Lower SF');
+def('L14', [{l:'UF'},{w:'L13'}], 5, 'Lower Final');
+def('GF', [{w:'UF'},{w:'L14'}], 5, 'Grand Final');
+def('GR', [{r:0},{r:1}], 5, 'Bracket Reset');
+
+function resolve(seeds, picks) {
+  const slots = {}, win = {}, lose = {};
+  for (const id of ORDER) {
+    const m = M[id];
+    const s = m.src.map(src => src.s ? seeds[src.s - 1] : src.w ? (win[src.w] ?? null) : src.l ? (lose[src.l] ?? null) : (slots.GF ? slots.GF[src.r] : null));
+    if (id === 'GR' && !(win.GF && slots.GF && win.GF === slots.GF[1])) { slots[id] = null; delete picks[id]; continue; }
+    slots[id] = s;
+    const pk = picks[id];
+    if (pk && s[0] && s[1] && (pk === s[0] || pk === s[1])) { win[id] = pk; lose[id] = pk === s[0] ? s[1] : s[0]; }
+    else delete picks[id];
+  }
+  let champ = null, second = null;
+  if (win.GF) {
+    if (win.GF === slots.GF[0]) { champ = win.GF; second = lose.GF; }
+    else if (win.GR) { champ = win.GR; second = lose.GR; }
+  }
+  return {slots, win, lose, champ, second};
+}
+
+function runBracket(seeds, mode, rnd) {
+  const picks = {}, scores = {};
+  for (const id of ORDER) {
+    const s = resolve(seeds, picks).slots[id];
+    if (!s || !s[0] || !s[1]) continue;
+    if (mode === 'fav') picks[id] = seeds.indexOf(s[0]) <= seeds.indexOf(s[1]) ? s[0] : s[1];
+    else { const sc = playSets(M[id].bo, rnd); picks[id] = sc[0] > sc[1] ? s[0] : s[1]; scores[id] = sc; }
+  }
+  return {picks, scores};
+}
+
+/* ---------- state ---------- */
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} },
+};
+function initialLang() {
+  const q = new URLSearchParams(location.search).get('lang');
+  if (q && LANGS.includes(q)) return q;
+  const saved = store.get('crl26-lang');
+  return LANGS.includes(saved) ? saved : 'en';
+}
+const state = {lang:initialLang(), scen:'A', inherit:true, custom:null, sel:null, picks:{}, scores:{}};
+const seedsNow = () => state.scen === 'X' ? state.custom : buildSeeds(state.scen, state.inherit);
+const pct = v => Math.round(v * 100) + '%';
+const scenName = id => t('s.' + id);
+
+function toast(msg) {
+  const tt = $('#toast'); tt.textContent = msg;
+  if (!hasGsap) { tt.style.opacity = 1; clearTimeout(toast.h); toast.h = setTimeout(() => tt.style.opacity = 0, 2200); return; }
+  gsap.killTweensOf(tt);
+  gsap.timeline().to(tt, {opacity:1, y:-4, duration:.2}).to(tt, {opacity:0, y:0, duration:.3, delay:2});
+}
+
+/* ---------- hero ---------- */
+function heroMix(first) {
+  const parts = [['gt',5,'cat.gts'],['lb',8,'cat.lb'],['cn',2,'cat.cn'],['lcq',1,'cat.lcq']];
+  const bar = $('#mixBar'), leg = $('#mixLegend');
+  bar.innerHTML = ''; leg.innerHTML = '';
+  parts.forEach(([c, n, k]) => {
+    const i = el('i'); i.style.flex = n; i.style.background = CAT[c].color; bar.appendChild(i);
+    leg.appendChild(el('span', null, `<i class="sw" style="background:${CAT[c].color}"></i><b>${n}</b> ${t(k)}`));
+  });
+  if (anim && first) gsap.from(bar.children, {scaleX:0, transformOrigin:'left', duration:.7, stagger:.08, ease:'power3.out', delay:.5});
+}
+
+function headline() {
+  const h = $('#headline');
+  h.innerHTML = t('hero.title').split(/\s+/).map(w => `<span class="w">${esc(w)}</span>`).join(' ');
+  if (anim) gsap.from(h.querySelectorAll('.w'), {opacity:0, y:14, filter:'blur(10px)', duration:.7, stagger:.09, ease:'power2.out'});
+}
+
+const START = Date.UTC(2026, 10, 5, 16, 0, 0);   // 6 Nov 00:00 UTC+8
+const END = Date.UTC(2026, 10, 8, 16, 0, 0);     // 9 Nov 00:00 UTC+8
+const cdLast = ['', '', '', ''];
+function tick() {
+  const now = Date.now();
+  let diff = START - now, lab = 'cd.toStart', st = 'cd.sCount';
+  if (now >= START && now < END) { diff = END - now; lab = 'cd.toEnd'; st = 'cd.sLive'; }
+  else if (now >= END) { diff = 0; lab = 'cd.over'; st = 'cd.sOver'; }
+  $('#cdLabel').textContent = t(lab); $('#cdStatus').textContent = t(st);
+  diff = Math.max(0, diff);
+  const v = [Math.floor(diff / 864e5), Math.floor(diff / 36e5) % 24, Math.floor(diff / 6e4) % 60, Math.floor(diff / 1e3) % 60].map(x => String(x).padStart(2, '0'));
+  ['cdD','cdH','cdM','cdS'].forEach((id, i) => {
+    if (v[i] === cdLast[i]) return;
+    const e = $('#' + id); e.textContent = v[i];
+    if (anim && cdLast[i] !== '') gsap.fromTo(e, {yPercent:-35, opacity:0}, {yPercent:0, opacity:1, duration:.35, ease:'power2.out'});
+    cdLast[i] = v[i];
+  });
+}
+
+function movingBorder() {
+  const cd = $('#cd'), r1 = $('#cdRect'), r2 = $('#cdRect2');
+  const size = () => { const w = cd.clientWidth - 1, h = cd.clientHeight - 1; [r1, r2].forEach(r => { r.setAttribute('width', w); r.setAttribute('height', h); }); };
+  size(); new ResizeObserver(size).observe(cd);
+  if (anim) gsap.fromTo(r1, {strokeDashoffset:0}, {strokeDashoffset:-100, duration:7, ease:'none', repeat:-1});
+  else r1.style.display = 'none';
+}
+
+function dots() {
+  const cv = $('#dots'), ctx = cv.getContext('2d'), hero = $('.hero');
+  let W, H, dpr, mx = -999, my = -999, raf = 0;
+  const GAP = 22, R = 160;
+  const css = getComputedStyle(document.documentElement);
+  const base = css.getPropertyValue('--line-2').trim() || '#34405C';
+  const hot = css.getPropertyValue('--gold').trim() || '#F3B53A';
+  function size() { dpr = Math.min(2, window.devicePixelRatio || 1); W = hero.clientWidth; H = hero.clientHeight; cv.width = W * dpr; cv.height = H * dpr; draw(); }
+  function draw() {
+    raf = 0;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
+    for (let y = GAP / 2; y < H; y += GAP) for (let x = GAP / 2; x < W; x += GAP) {
+      const d = Math.hypot(x - mx, y - my);
+      if (d < R) { const k = 1 - d / R; ctx.globalAlpha = .25 + .75 * k; ctx.fillStyle = hot; ctx.beginPath(); ctx.arc(x, y, 1 + 1.1 * k, 0, 6.283); ctx.fill(); }
+      else { ctx.globalAlpha = .55; ctx.fillStyle = base; ctx.fillRect(x - .75, y - .75, 1.5, 1.5); }
+    }
+    ctx.globalAlpha = 1;
+  }
+  const q = () => { if (!raf) raf = requestAnimationFrame(draw); };
+  if (!RM) {
+    hero.addEventListener('pointermove', e => { const b = hero.getBoundingClientRect(); mx = e.clientX - b.left; my = e.clientY - b.top; q(); });
+    hero.addEventListener('pointerleave', () => { mx = my = -999; q(); });
+  }
+  new ResizeObserver(size).observe(hero);
+}
+
+/* ---------- roster ---------- */
+function card(n) {
+  const p = P[n], c = CAT[p.cat];
+  const d = el('div', 'pc' + (p.out ? ' out' : ''));
+  d.innerHTML = `
+    <div class="pc-top"><span class="tag"><i class="sw" style="background:${p.out ? 'var(--dim)' : c.color}"></i>${esc(origin(n).split(' · ')[0])}</span><span>${p.cc}</span></div>
+    <div class="pc-name">${esc(n)}</div>
+    <div class="pc-team">${p.team ? esc(p.team) : t('c.noTeam')}</div>
+    ${p.out ? `<div class="note">${t('c.out')}</div>` : ''}
+    <div class="pc-foot"><span>${t('c.pts')}</span><b>${p.pts != null ? p.pts.toLocaleString(state.lang) : '–'}</b></div>`;
+  return d;
+}
+function roster() {
+  const R = $('#roster');
+  R.innerHTML = '<i class="hl"></i>';
+  const hl = R.querySelector('.hl');
+  const grp = (title, sub, names, cls) => {
+    const g = el('div');
+    g.appendChild(el('div', 'grp-head', `<h3>${title}</h3><span>${sub}</span>`));
+    const cs = el('div', 'cards ' + (cls || '')); names.forEach(n => cs.appendChild(card(n))); g.appendChild(cs);
+    return g;
+  };
+  R.appendChild(grp(t('cat.gts'), t('g.gtSub'), ['Mohamed Light','Pedro','SandBox','Clown','Mugi'], 'c5'));
+  R.appendChild(grp(t('g.lbTitle'), t('g.lbSub'), ['Sub','adriel','Asaf','Ryley','Vitor75','Guriko','Morten','Viiper'], 'c4'));
+  const sp = el('div', 'split');
+  sp.appendChild(grp('Champions Cup', t('g.cnSub'), ['Hermit','Midnight']));
+  sp.appendChild(grp('Last Chance Qualifier', t('g.lcqSub'), ['Woo','JorZ']));
+  R.appendChild(sp);
+
+  if (!hasGsap) return;
+  R.querySelectorAll('.pc').forEach(c => c.addEventListener('mouseenter', () => {
+    const a = R.getBoundingClientRect(), b = c.getBoundingClientRect();
+    const to = {x:b.left - a.left, y:b.top - a.top, width:b.width, height:b.height};
+    if (+gsap.getProperty(hl, 'opacity') < .05) gsap.set(hl, to);
+    gsap.to(hl, {...to, opacity:1, duration:RM ? 0 : .28, ease:'power3.out'});
+  }));
+  R.addEventListener('mouseleave', () => gsap.to(hl, {opacity:0, duration:.2}));
+}
+
+/* ---------- seeding ---------- */
+const rows = {};
+function ensureCustom() { if (!state.custom) state.custom = seedsNow().slice(); }
+function scenTabs() {
+  const T = $('#scenTabs');
+  ALL_SCEN.forEach(s => {
+    const b = el('button', 'tab'); b.type = 'button'; b.dataset.id = s.id; b.setAttribute('role', 'tab');
+    b.addEventListener('click', () => { if (s.id === 'X') ensureCustom(); setScen(s.id); });
+    T.appendChild(b);
+  });
+  $('#bkScen').addEventListener('change', e => { if (e.target.value === 'X') ensureCustom(); setScen(e.target.value); });
+}
+function scenLabels() {
+  document.querySelectorAll('#scenTabs .tab').forEach(b => {
+    const s = ALL_SCEN.find(x => x.id === b.dataset.id);
+    b.innerHTML = `<b>${scenName(s.id)}</b><small>${s.w != null ? t('s.approx') + ' ' + pct(s.w) : t('s.viaSwap')}</small>`;
+  });
+  const sel = $('#bkScen'); sel.innerHTML = '';
+  ALL_SCEN.forEach(s => { const o = el('option', null, scenName(s.id) + (s.w != null ? ` · ${t('s.approx')} ${pct(s.w)}` : '')); o.value = s.id; sel.appendChild(o); });
+  sel.value = state.scen;
+  $('#scenText').innerHTML = t('s.' + state.scen + '.t');
+  $('#inheritToggle span').innerHTML = t(state.inherit ? 'tg.on' : 'tg.off');
+}
+function moveInd(instant) {
+  const T = $('#scenTabs'), on = T.querySelector('.tab.on'), ind = T.querySelector('.ind');
+  if (!on) return;
+  const to = {x:on.offsetLeft, width:on.offsetWidth};
+  if (hasGsap) gsap.to(ind, {...to, duration:instant || RM ? 0 : .35, ease:'power3.out'});
+  else { ind.style.transform = `translateX(${to.x}px)`; ind.style.width = to.width + 'px'; }
+}
+function setScen(id, quiet) {
+  state.scen = id; state.sel = null;
+  document.querySelectorAll('#scenTabs .tab').forEach(b => { const on = b.dataset.id === id; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); });
+  scenLabels(); moveInd();
+  renderSeeds(true); renderSide(); renderStrips();
+  fillBracket('fav');
+  if (!quiet) toast(t('t.scen', {n:scenName(id)}));
+}
+
+function makeRows() {
+  const L = $('#seedList');
+  FIELD.forEach(n => {
+    const r = el('button', 'srow'); r.type = 'button'; r.dataset.flipId = n;
+    r.innerHTML = `<span class="sd"></span><span class="nm"><i class="sw"></i><span></span><em></em></span><span class="og"></span><span class="op"></span><span class="pts"></span>`;
+    r.addEventListener('click', () => onSeedClick(n));
+    rows[n] = r; L.appendChild(r);
+  });
+}
+function onSeedClick(n) {
+  if (!state.sel) { state.sel = n; rows[n].classList.add('sel'); return; }
+  if (state.sel === n) { rows[n].classList.remove('sel'); state.sel = null; return; }
+  const s = seedsNow().slice();
+  const a = s.indexOf(state.sel), b = s.indexOf(n);
+  [s[a], s[b]] = [s[b], s[a]];
+  rows[state.sel].classList.remove('sel');
+  const pair = `${state.sel} ↔ ${n}`;
+  state.sel = null; state.custom = s;
+  setScen('X', true);
+  toast(t('t.swap', {p:pair}));
+}
+function renderSeeds(flip) {
+  const seeds = seedsNow(), L = $('#seedList');
+  const st = flip && anim && window.Flip ? Flip.getState(Object.values(rows)) : null;
+  seeds.forEach((n, i) => {
+    const r = rows[n], p = P[n], seed = i + 1, opp = seeds[OPP[seed] - 1];
+    r.querySelector('.sd').textContent = seed;
+    r.querySelector('.nm .sw').style.background = CAT[p.cat].color;
+    r.querySelector('.nm span').textContent = n;
+    r.querySelector('.nm em').textContent = p.cc;
+    r.querySelector('.og').textContent = origin(n, true);
+    r.querySelector('.op').innerHTML = `<b>${OPP[seed]}</b> · ${esc(opp)}`;
+    r.querySelector('.pts').textContent = p.pts != null ? p.pts.toLocaleString(state.lang) : '–';
+    r.classList.toggle('sel', state.sel === n);
+    L.appendChild(r);
+  });
+  if (st) Flip.from(st, {duration:.55, ease:'power2.inOut'});
+}
+
+function renderSide(animate = true) {
+  const acc = {};
+  SCEN.forEach(s => {
+    const seeds = buildSeeds(s.id, state.inherit);
+    PAIRS.forEach(([a, b]) => { const k = seeds[a-1] + '|' + seeds[b-1]; acc[k] = (acc[k] || 0) + s.w; });
+  });
+  const now = seedsNow();
+  const cur = new Set(PAIRS.map(([a, b]) => now[a-1] + '|' + now[b-1]));
+  const D = $('#duels'); D.innerHTML = '';
+  Object.entries(acc).sort((x, y) => y[1] - x[1]).slice(0, 8).forEach(([k, w]) => {
+    const [a, b] = k.split('|');
+    D.appendChild(el('div', 'duel', `<span class="who">${esc(a)}<em>vs</em>${esc(b)}</span><span class="pct">${pct(w)}</span><span class="bar"><i style="width:${w*100}%;${cur.has(k) ? '' : 'background:var(--line-2)'}"></i></span>`));
+  });
+  if (D.children.length && anim && animate) gsap.from(D.children, {opacity:0, x:-6, duration:.3, stagger:.03});
+}
+
+const abbr = n => n.replace(/\s+/g, '').slice(0, 3).toUpperCase();
+function renderStrips() {
+  const S = $('#strips'); S.innerHTML = '';
+  const cell = (cat, top, bot, extra = '', title = '') => {
+    const c = el('div', 'cell ' + extra, `<small>${top}</small><span>${bot}</span>`);
+    c.style.background = `color-mix(in srgb, ${CAT[cat].color} 26%, var(--surface))`;
+    if (title) c.title = title;
+    return c;
+  };
+  const strip = (lab, sub, cells, cls = '') => {
+    const s = el('div', 'strip ' + cls, `<div class="lab"><b>${lab}</b><span>${sub}</span></div>`);
+    const cs = el('div', 'cells'); cells.forEach(c => cs.appendChild(c));
+    for (let i = cells.length; i < 16; i++) cs.appendChild(el('div', 'cell empty'));
+    s.appendChild(cs); return s;
+  };
+  const y23 = [...[1,2,3,4,5,6,7].map(i => ['gt','MW'+i]), ['cn','CN'], ['lb','P1'], ['cn','CN'], ...[2,3,4,5,6,7].map(i => ['lb','P'+i])];
+  S.appendChild(strip('2023', t('st.23'), y23.map(([c, x], i) => cell(c, i+1, x))));
+  const n24 = ['Mohamed Light','Taa','Pedro','Lucas','Guriko','Sub','Ryley','Lciop'];
+  const c24 = ['gt','gt','gt','gt','gt','lb','cm','cn'];
+  S.appendChild(strip('2024', t('st.24'), n24.map((n, i) => cell(c24[i], i+1, abbr(n), '', n))));
+  const n25 = ['Mohamed Light','Ian77','Pedro','Sub','Frontier Guard','Lucas','adriel','Egor','SandBox','Mugi','xopxsam','Vitor75'];
+  const c25 = ['lb','lb','lb','lb','cn','lb','lb','lb','lb','lb','lb','lcq'];
+  S.appendChild(strip('2025', t('st.25'), n25.map((n, i) => cell(c25[i], i+1, abbr(n), i < 4 ? 'bye' : '', n))));
+  SCEN.forEach((s, k) => {
+    const seeds = buildSeeds(s.id, state.inherit);
+    const cls = (state.scen === s.id ? 'now ' : '') + (k === 0 ? 'sep' : '');
+    S.appendChild(strip(`2026 · ${scenName(s.id)}`, `${t('s.approx')} ${pct(s.w)}`, seeds.map((n, i) => cell(P[n].cat, i+1, abbr(n), '', n)), cls));
+  });
+  if (state.scen === 'X') S.appendChild(strip(`2026 · ${scenName('X')}`, t('s.viaSwap'), state.custom.map((n, i) => cell(P[n].cat, i+1, abbr(n), '', n)), 'now'));
+}
+function catLegend() {
+  const L = $('#catLegend'); L.innerHTML = '';
+  ['gt','lb','cn','lcq','cm'].forEach(c => L.appendChild(el('span', null, `<i class="sw" style="background:${CAT[c].color}"></i>${t('cat.' + c)}`)));
+  L.appendChild(el('span', null, t('st.abbr')));
+}
+
+/* ---------- bracket ---------- */
+const CW = 176, CH = 58, COLW = 212, ROW = 82, UT = 58;
+const LT = UT + 8 * ROW + 84;
+const POS = {};
+(function layout() {
+  const X = c => c * COLW, mid = (a, b) => (POS[a].y + POS[b].y) / 2;
+  for (let i = 0; i < 8; i++) POS['U'+(i+1)] = {x:X(0), y:UT + i*ROW};
+  for (let k = 1; k <= 4; k++) POS['UQ'+k] = {x:X(1), y:mid('U'+(2*k-1), 'U'+(2*k))};
+  POS.US1 = {x:X(3), y:mid('UQ1','UQ2')}; POS.US2 = {x:X(3), y:mid('UQ3','UQ4')};
+  POS.UF = {x:X(5), y:mid('US1','US2')};
+  for (let k = 1; k <= 4; k++) POS['L'+k] = {x:X(0), y:LT + (k-1)*ROW};
+  for (let k = 5; k <= 8; k++) POS['L'+k] = {x:X(1), y:POS['L'+(k-4)].y};
+  POS.L9 = {x:X(2), y:mid('L5','L6')}; POS.L10 = {x:X(2), y:mid('L7','L8')};
+  POS.L11 = {x:X(3), y:POS.L9.y}; POS.L12 = {x:X(3), y:POS.L10.y};
+  POS.L13 = {x:X(4), y:mid('L11','L12')}; POS.L14 = {x:X(5), y:POS.L13.y};
+  POS.GF = {x:X(6), y:mid('UF','L14')}; POS.GR = {x:X(7), y:POS.GF.y};
+})();
+const BW = 8 * COLW - (COLW - CW), BH = LT + 4 * ROW - (ROW - CH);
+const heads = () => [
+  [0, UT - 46, `<b>Upper</b> · ${t('bk.r1')}`], [1, UT - 46, `<b>Upper</b> · ${t('bk.qf')}`], [3, UT - 46, `<b>Upper</b> · ${t('bk.sf')}`], [5, UT - 46, '<b>Upper Final</b> · Bo5'],
+  [0, LT - 46, `<b>Lower</b> · ${t('bk.r1')}`], [1, LT - 46, `<b>Lower</b> · ${t('bk.r2')}`], [2, LT - 46, `<b>Lower</b> · ${t('bk.r3')}`], [3, LT - 46, `<b>Lower</b> · ${t('bk.qf')}`], [4, LT - 46, `<b>Lower</b> · ${t('bk.sf')}`], [5, LT - 46, '<b>Lower Final</b> · Bo5'],
+];
+let prevActive = new Set(), prevFilled = new Set();
+
+function placeholder(src) {
+  if (src.w) return t('bk.winner') + ' ' + M[src.w].lab;
+  if (src.l) return t('bk.loser') + ' ' + M[src.l].lab;
+  return '';
+}
+function fillBracket(mode) {
+  if (mode === 'clear') { state.picks = {}; state.scores = {}; }
+  else { const r = runBracket(seedsNow(), mode, Math.random); state.picks = r.picks; state.scores = r.scores; }
+  renderBracket(true);
+}
+function renderBracket(cascade) {
+  const seeds = seedsNow();
+  const R = resolve(seeds, state.picks);
+  for (const id in state.scores) if (!state.picks[id]) delete state.scores[id];
+  const B = $('#bk');
+  B.style.width = BW + 'px'; B.style.height = BH + 'px';
+  B.innerHTML = '';
+  heads().forEach(([c, y, h]) => { const e = el('div', 'colh', h); e.style.left = c * COLW + 'px'; e.style.top = y + 'px'; B.appendChild(e); });
+  const dv = el('div', 'bk-div'); dv.style.top = (LT - 70) + 'px'; dv.style.width = (6 * COLW - 36) + 'px'; B.appendChild(dv);
+
+  const NS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(NS, 'svg'); svg.setAttribute('width', BW); svg.setAttribute('height', BH);
+  const rowY = (id, i) => POS[id].y + 1 + 14 + i * 28;
+  const active = new Set(), newPaths = [];
+  for (const id of ORDER) {
+    if (id === 'GR' && !R.slots.GR) continue;
+    M[id].src.forEach((src, i) => {
+      const from = src.w || (src.r != null ? 'GF' : null);
+      if (!from || (src.r != null && i === 1)) return;
+      const sx = POS[from].x + CW, sy = POS[from].y + CH / 2;
+      const tx = POS[id].x, ty = src.r != null ? POS[id].y + CH / 2 : rowY(id, i);
+      const p = document.createElementNS(NS, 'path');
+      p.setAttribute('d', `M${sx} ${sy}H${tx - 16}V${ty}H${tx}`);
+      const key = from + '>' + id + i, who = R.win[from];
+      if (who) { p.classList.add('act'); p.dataset.p = who; active.add(key); if (!prevActive.has(key)) newPaths.push(p); }
+      svg.appendChild(p);
+    });
+  }
+  B.appendChild(svg);
+
+  const filled = new Set(), newRows = [];
+  for (const id of ORDER) {
+    const m = M[id], s = R.slots[id];
+    const cardEl = el('div', 'm' + (id === 'GF' || id === 'GR' ? ' final' : '') + (id === 'GR' && !s ? ' off' : ''));
+    cardEl.style.left = POS[id].x + 'px'; cardEl.style.top = POS[id].y + 'px';
+    cardEl.appendChild(el('span', 'ml', `${m.lab} · Bo${m.bo}`));
+    const box = el('div', 'box');
+    [0, 1].forEach(i => {
+      const n = s ? s[i] : null;
+      const b = el('button', 'r'); b.type = 'button';
+      if (!n) {
+        b.classList.add('ph'); b.disabled = true;
+        b.innerHTML = `<i class="ct"></i><span class="s"></span><span class="n">${esc(id === 'GR' ? t('bk.grPh') : placeholder(m.src[i]))}</span><span class="p"></span>`;
+      } else {
+        const seed = seeds.indexOf(n) + 1, other = s[1 - i], w = R.win[id];
+        let ptxt = '';
+        if (w) {
+          const sc = state.scores[id];
+          ptxt = sc ? String(sc[i]) : (w === n ? 'W' : '');
+          b.classList.add(w === n ? 'win' : 'lose');
+        }
+        b.dataset.name = n;
+        b.innerHTML = `<i class="ct" style="background:${CAT[P[n].cat].color}"></i><span class="s">${seed}</span><span class="n">${esc(n)}</span><span class="p">${ptxt}</span>`;
+        if (other) b.addEventListener('click', () => pick(id, n)); else b.disabled = true;
+        const key = id + i + n; filled.add(key);
+        if (!prevFilled.has(key)) newRows.push(b);
+      }
+      box.appendChild(b);
+    });
+    cardEl.appendChild(box); B.appendChild(cardEl);
+  }
+
+  B.querySelectorAll('.r[data-name]').forEach(b => {
+    b.addEventListener('mouseenter', () => hlPlayer(b.dataset.name));
+    b.addEventListener('mouseleave', () => hlPlayer(null));
+  });
+
+  if (anim && cascade !== false) {
+    newPaths.forEach(p => { const L = p.getTotalLength(); gsap.fromTo(p, {strokeDasharray:L, strokeDashoffset:L}, {strokeDashoffset:0, duration:.45, ease:'power2.out', clearProps:'strokeDasharray,strokeDashoffset'}); });
+    if (newRows.length) gsap.from(newRows.map(r => r.querySelector('.n')), {opacity:0, x:-8, duration:.35, stagger:cascade === true ? .008 : 0, ease:'power2.out'});
+  }
+  prevActive = active; prevFilled = filled;
+  renderPlaces(R);
+}
+function hlPlayer(n) {
+  const B = $('#bk');
+  B.querySelectorAll('.hl').forEach(e => e.classList.remove('hl'));
+  if (!n) return;
+  B.querySelectorAll('.r[data-name]').forEach(e => { if (e.dataset.name === n) e.classList.add('hl'); });
+  B.querySelectorAll('path').forEach(e => { if (e.dataset.p === n) e.classList.add('hl'); });
+}
+function pick(id, n) {
+  if (state.picks[id] === n) delete state.picks[id]; else state.picks[id] = n;
+  delete state.scores[id];
+  renderBracket('step');
+}
+function renderPlaces(R) {
+  const lose = ids => ids.map(i => R.lose[i]).filter(Boolean);
+  const groups = [
+    ['pc.champ', R.champ ? [R.champ] : [], 'champ'],
+    ['pc.2', R.second ? [R.second] : []],
+    ['pc.3', lose(['L14'])], ['pc.4', lose(['L13'])],
+    ['pc.56', lose(['L11','L12'])], ['pc.78', lose(['L9','L10'])],
+    ['pc.912', lose(['L5','L6','L7','L8'])], ['pc.1316', lose(['L1','L2','L3','L4'])],
+  ];
+  const Pl = $('#places'); const before = Pl.querySelector('.champ .pn')?.textContent;
+  Pl.innerHTML = '';
+  groups.forEach(([k, names, cls]) => {
+    Pl.appendChild(el('div', 'place ' + (cls || ''), `<div class="pl">${t(k)}</div><div class="pn">${names.length ? names.map(esc).join(', ') : `<i>${t('pc.open')}</i>`}</div>`));
+  });
+  const now = Pl.querySelector('.champ .pn');
+  if (anim && R.champ && before !== undefined && before !== now.textContent) gsap.from(now, {opacity:0, y:10, filter:'blur(6px)', duration:.5, ease:'power2.out'});
+}
+
+/* ---------- nav ---------- */
+let navOn = () => {};
+function nav() {
+  const N = $('#nav'), pill = N.querySelector('.pill'), links = [...N.querySelectorAll('a')];
+  const secs = links.map(a => document.querySelector(a.getAttribute('href')));
+  const setOn = i => {
+    links.forEach((a, k) => a.classList.toggle('on', k === i));
+    const a = links[i], to = {x:a.offsetLeft, width:a.offsetWidth, opacity:1};
+    if (hasGsap) gsap.to(pill, {...to, duration:RM ? 0 : .3, ease:'power3.out'});
+    else Object.assign(pill.style, {transform:`translateX(${to.x}px)`, width:to.width + 'px', opacity:1});
+  };
+  let cur = -1;
+  const onScroll = force => {
+    const y = window.scrollY + 120; let i = 0;
+    secs.forEach((s, k) => { if (s && s.offsetTop <= y) i = k; });
+    if (i !== cur || force === true) { cur = i; setOn(i); }
+  };
+  window.addEventListener('scroll', onScroll, {passive:true});
+  window.addEventListener('resize', () => { onScroll(true); moveInd(true); });
+  navOn = () => onScroll(true);
+  onScroll(true);
+}
+
+/* ---------- language ---------- */
+function langSwitch() {
+  const L = $('#lang');
+  LANGS.forEach(l => {
+    const b = el('button', null, l.toUpperCase()); b.type = 'button'; b.dataset.l = l; b.setAttribute('aria-label', {en:'English', de:'Deutsch', fr:'Français', it:'Italiano'}[l]);
+    b.addEventListener('click', () => setLang(l));
+    L.appendChild(b);
+  });
+}
+function applyStatic() {
+  document.documentElement.lang = state.lang;
+  document.querySelectorAll('[data-i18n]').forEach(e => { e.innerHTML = t(e.dataset.i18n); });
+  document.querySelectorAll('#lang button').forEach(b => { const on = b.dataset.l === state.lang; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
+}
+function setLang(l) {
+  if (l === state.lang) return;
+  state.lang = l; store.set('crl26-lang', l);
+  const u = new URL(location.href);
+  if (l === 'en') u.searchParams.delete('lang'); else u.searchParams.set('lang', l);
+  try { history.replaceState(null, '', u); } catch (e) {}
+  applyStatic(); headline(); heroMix(false); tick();
+  roster(); scenLabels(); renderSeeds(false); renderSide(false); renderStrips(); catLegend(); renderBracket(false);
+  requestAnimationFrame(() => { moveInd(true); navOn(); });
+}
+
+/* ---------- boot ---------- */
+langSwitch(); applyStatic();
+headline(); heroMix(true); tick(); setInterval(tick, 1000); movingBorder(); dots();
+roster();
+scenTabs(); makeRows(); catLegend();
+$('#inheritToggle').addEventListener('click', e => {
+  state.inherit = !state.inherit;
+  e.currentTarget.setAttribute('aria-pressed', state.inherit);
+  if (state.scen === 'X') state.scen = 'A';
+  state.custom = null;
+  setScen(state.scen, true);
+  toast(t(state.inherit ? 't.inhOn' : 't.inhOff'));
+});
+$('#bFav').addEventListener('click', () => { fillBracket('fav'); toast(t('t.seeds')); });
+$('#bSim').addEventListener('click', () => { fillBracket('sim'); toast(t('t.rand', {n:resolve(seedsNow(), state.picks).champ})); });
+$('#bClr').addEventListener('click', () => { fillBracket('clear'); toast(t('t.clear')); });
+setScen('A', true);
+nav();
+requestAnimationFrame(() => moveInd(true));
+})();
+</script>
+</body>
+</html>
