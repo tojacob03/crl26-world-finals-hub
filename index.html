@@ -12,13 +12,16 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&text=%E4%B8%8A%E6%B5%B7&display=swap">
 <style>
 /* Layout: broadcast hub. Sticky header, split hero (title | countdown), stacked dashboard sections, bracket on its own scroll stage. */
 :root{
   --bg:#0B0F18; --surface:#111726; --surface-2:#182033; --line:#232D44; --line-2:#34405C;
   --fg:#E9EDF5; --muted:#8C97AE; --dim:#5E6984;
   --gold:#F3B53A; --blue:#5B93FF; --red:#F2605A; --teal:#3FC9B0; --gray:#A9B1C3;
+  --han:#18213A;
   --f-display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --f-han:"Noto Serif SC","Songti SC","STSong","SimSun",serif;
   --f-body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --f-mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
   --r:10px;
@@ -56,6 +59,36 @@ button{font:inherit;color:inherit}
 /* hero */
 .hero{position:relative;border-bottom:1px solid var(--line);overflow:hidden}
 .hero canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.han{position:absolute;left:-.03em;bottom:-.4em;font-family:var(--f-han);font-weight:900;font-size:clamp(260px,40vw,640px);line-height:1;letter-spacing:-.06em;color:var(--han);pointer-events:none;user-select:none;white-space:nowrap}
+@media (max-width:900px){.han{font-size:64vw;bottom:-.3em}}
+
+/* draw: field to bracket */
+.draw{border-bottom:1px solid var(--line)}
+.draw-stage{position:relative;height:calc(100svh - var(--hh,58px));min-height:540px;overflow:hidden;background:var(--bg)}
+.draw-stage > .wrap{height:100%;display:grid;grid-template-rows:auto minmax(0,1fr);gap:22px;padding-block:30px 26px}
+.draw-top{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 24px;align-items:end}
+.draw-caps{position:relative;height:2.05em;font-family:var(--f-display);font-weight:800;font-size:clamp(28px,4.4vw,58px);line-height:1;text-transform:uppercase;margin-top:8px}
+@media (min-width:761px){.draw-caps{height:1.05em}}
+.draw-cap{position:absolute;inset:0;text-wrap:balance}
+.draw-cap + .draw-cap{opacity:0}
+.draw-side{display:grid;justify-items:end;gap:10px;text-align:right}
+.draw-steps{display:flex;gap:6px}
+.draw-steps i{display:block;width:34px;height:3px;background:var(--line-2);overflow:hidden;border-radius:2px}
+.draw-steps i b{display:block;height:100%;background:var(--gold);transform:scaleX(0);transform-origin:left}
+.draw-steps i:first-child b{transform:scaleX(1)}
+.draw-note{margin:0;font-size:12.5px;color:var(--muted);max-width:42ch}
+.draw-note a{color:var(--fg);text-underline-offset:3px;text-decoration-color:var(--gold)}
+@media (max-width:760px){.draw-top{grid-template-columns:1fr}.draw-side{justify-items:start;text-align:left;grid-auto-flow:column;align-items:center;justify-content:space-between}}
+.draw-field{position:relative;min-height:0}
+.dt{position:absolute;left:0;top:0;display:grid;grid-template-columns:1.5em minmax(0,1fr) auto;align-items:center;gap:.5em;padding:0 .7em 0 .6em;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden;will-change:transform}
+.dt .ds{font-family:var(--f-display);font-weight:800;color:var(--gold);text-align:right;opacity:0}
+.dt .dn{display:flex;align-items:center;gap:.45em;min-width:0;font-family:var(--f-display);font-weight:800;text-transform:uppercase;line-height:1}
+.dt .dn span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dt .dn .sw{width:.32em;height:.32em}
+.dt .dc{font-family:var(--f-mono);font-size:10.5px;color:var(--muted)}
+.dl{position:absolute;left:0;top:0;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);white-space:nowrap;opacity:0}
+.dl b{color:var(--fg);font-weight:600}
+@media (max-width:760px){.dt .dc{display:none}.dt{grid-template-columns:1.4em minmax(0,1fr)}}
 .hero .wrap{position:relative;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:48px;padding-block:64px 56px;align-items:end}
 @media (max-width:900px){.hero .wrap{grid-template-columns:1fr;gap:32px;padding-block:44px 40px}}
 .eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}
@@ -226,6 +259,26 @@ select{appearance:none;background:var(--surface);border:1px solid var(--line-2);
 .r.lose .n,.r.lose .s{color:var(--dim)}
 .r.hl .n{color:var(--gold)}
 .m.off{opacity:.35}
+.ghost{stroke:none!important}
+.chip{position:absolute;left:0;top:0;z-index:5;pointer-events:none;font-family:var(--f-mono);font-size:10px;font-weight:600;line-height:1;padding:4px 7px;border-radius:999px;background:var(--gold);color:var(--bg);white-space:nowrap;opacity:0}
+.chip.drop{background:var(--bg);color:var(--red);box-shadow:inset 0 0 0 1px var(--red)}
+
+/* bracket, phone view */
+.mb{display:grid;gap:12px}
+.mb-tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding:4px;background:var(--surface);border-radius:10px}
+.mb-tabs::-webkit-scrollbar{display:none}
+.mb-tab{position:relative;flex:none;border:0;background:none;font-family:var(--f-mono);font-size:11px;letter-spacing:.04em;color:var(--muted);padding:8px 10px;border-radius:7px;cursor:pointer;white-space:nowrap}
+.mb-tab.on{background:var(--surface-2);color:var(--fg)}
+.mb-tab.ping::after{content:"";position:absolute;top:4px;right:4px;width:5px;height:5px;border-radius:50%;background:var(--gold)}
+.mb-track{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}
+.mb-track::-webkit-scrollbar{display:none}
+.mb-col{flex:0 0 100%;scroll-snap-align:start;display:grid;gap:24px;align-content:start;background:var(--surface);border-radius:12px;padding:16px 14px 20px;min-width:0}
+.mb-h{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.mb-h b{color:var(--fg);font-weight:600}
+.m.flow{position:relative;width:auto}
+.m.flow .ml{position:static;display:block;margin-bottom:6px}
+.m.flow .r{height:40px;font-size:14px;grid-template-columns:4px 24px minmax(0,1fr) auto}
+.mb-hint{margin:0;font-size:12px;color:var(--dim)}
 .places{margin-top:16px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
 @media (max-width:820px){.places{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .place{background:var(--surface);border-radius:var(--r);padding:12px 14px;min-width:0}
@@ -254,6 +307,9 @@ footer p{margin:6px 0 0;max-width:60ch}
 footer ul{margin:6px 0 0;padding:0;list-style:none;display:grid;gap:4px}
 footer a{color:var(--fg);text-decoration-color:var(--line-2);text-underline-offset:3px}
 footer a:hover{text-decoration-color:var(--gold)}
+.wordmark{grid-column:1/-1;display:flex;align-items:baseline;gap:.12em;font-family:var(--f-display);font-weight:800;font-size:clamp(72px,14vw,200px);line-height:.82;text-transform:uppercase;color:var(--surface-2);white-space:nowrap;overflow:hidden;margin-bottom:12px}
+.wordmark span{font-family:var(--f-han);font-weight:900;font-size:.86em;letter-spacing:-.04em;color:var(--gold)}
+.legal{grid-column:1/-1;margin:0;padding-top:16px;border-top:1px solid var(--line);font-size:11.5px;color:var(--dim)}
 
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--surface-2);border:1px solid var(--line-2);border-radius:9px;padding:9px 14px;font-size:13px;z-index:60;opacity:0;pointer-events:none;max-width:calc(100vw - 32px);text-align:center}
 
@@ -265,7 +321,7 @@ footer a:hover{text-decoration-color:var(--gold)}
 <header class="top">
   <div class="wrap">
     <a class="brand" href="#top"><b>CRL26</b><span>World Finals Hub</span></a>
-    <nav class="nav" id="nav">
+    <nav class="nav" id="nav" data-lenis-prevent>
       <i class="pill"></i>
       <a href="#top" data-i18n="nav.countdown">Countdown</a>
       <a href="#players" data-i18n="nav.players">Players</a>
@@ -279,6 +335,7 @@ footer a:hover{text-decoration-color:var(--gold)}
 
 <main>
   <section class="hero" id="top">
+    <div class="han" aria-hidden="true">上海</div>
     <canvas id="dots" aria-hidden="true"></canvas>
     <div class="wrap">
       <div>
@@ -309,6 +366,28 @@ footer a:hover{text-decoration-color:var(--gold)}
     </div>
   </section>
 
+  <section class="draw" id="draw" aria-labelledby="drawCap1">
+    <div class="draw-stage" id="drawStage">
+      <div class="wrap">
+        <div class="draw-top">
+          <div>
+            <div class="kicker" data-i18n="draw.k"></div>
+            <div class="draw-caps">
+              <div class="draw-cap" id="drawCap1" data-i18n="draw.s1"></div>
+              <div class="draw-cap" data-i18n="draw.s2"></div>
+              <div class="draw-cap" data-i18n="draw.s3"></div>
+            </div>
+          </div>
+          <div class="draw-side">
+            <div class="draw-steps" aria-hidden="true"><i><b></b></i><i><b></b></i><i><b></b></i></div>
+            <p class="draw-note" id="drawNote"></p>
+          </div>
+        </div>
+        <div class="draw-field" id="drawField"></div>
+      </div>
+    </div>
+  </section>
+
   <section class="sec" id="players">
     <div class="wrap">
       <div class="sec-head">
@@ -326,7 +405,7 @@ footer a:hover{text-decoration-color:var(--gold)}
         <p data-i18n="sd.p"></p>
       </div>
 
-      <div class="tabs" id="scenTabs" role="tablist"><i class="ind"></i></div>
+      <div class="tabs" id="scenTabs" role="tablist" data-lenis-prevent><i class="ind"></i></div>
 
       <div class="scen-desc">
         <p id="scenText"></p>
@@ -353,7 +432,7 @@ footer a:hover{text-decoration-color:var(--gold)}
       <div class="panel strips">
         <h3 data-i18n="sd.stripsH"></h3>
         <p class="sub" data-i18n="sd.stripsSub"></p>
-        <div class="strip-scroll"><div class="strip-tbl" id="strips"></div></div>
+        <div class="strip-scroll" data-lenis-prevent><div class="strip-tbl" id="strips"></div></div>
         <div class="cat-legend" id="catLegend"></div>
       </div>
     </div>
@@ -373,7 +452,8 @@ footer a:hover{text-decoration-color:var(--gold)}
         <span class="grow"></span>
         <span class="bk-help" data-i18n="bk.help"></span>
       </div>
-      <div class="bk-stage"><div class="bracket" id="bk"></div></div>
+      <div class="bk-stage" id="bkStage" data-lenis-prevent><div class="bracket" id="bk"></div></div>
+      <div class="mb" id="bkm" hidden></div>
       <div class="places" id="places"></div>
     </div>
   </section>
@@ -414,6 +494,7 @@ footer a:hover{text-decoration-color:var(--gold)}
 
 <footer>
   <div class="wrap">
+    <div class="wordmark" aria-hidden="true">CRL26<span>上海</span></div>
     <div>
       <div class="kicker" data-i18n="ft.noteK"></div>
       <p data-i18n="ft.note"></p>
@@ -428,16 +509,21 @@ footer a:hover{text-decoration-color:var(--gold)}
         <li><a href="https://royaleapi.com/blog/crl-2026-info" target="_blank" rel="noopener">RoyaleAPI · CRL 2026 Info</a></li>
       </ul>
     </div>
+    <p class="legal" lang="en">This material is unofficial and is not endorsed by Supercell. For more information see Supercell's Fan Content Policy: <a href="https://www.supercell.com/fan-content-policy" target="_blank" rel="noopener">www.supercell.com/fan-content-policy</a>.</p>
   </div>
 </footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Flip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/MotionPathPlugin.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
 <script>
 (() => {
 const hasGsap = typeof window.gsap !== 'undefined';
-if (hasGsap && window.Flip) gsap.registerPlugin(Flip);
+if (hasGsap) gsap.registerPlugin(...[window.Flip, window.ScrollTrigger, window.MotionPathPlugin].filter(Boolean));
+const hasST = hasGsap && !!window.ScrollTrigger;
 const RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const anim = hasGsap && !RM;
 const $ = (s, r = document) => r.querySelector(s);
@@ -499,6 +585,9 @@ en: {
   'fm.p2b':"Every game uses its own deck. No card may appear in more than one deck within a set.",
   'fm.k3':"Event", 'fm.date':"Date", 'fm.dateV':"November 6–8, 2026", 'fm.venue':"Venue", 'fm.venueV':"Huangpu Inner Bund Culture Center (per rulebook)",
   'fm.prize':"Prize pool", 'fm.prizeV':"to be announced (rulebook: TBC)", 'fm.streamsV':"Twitch, YouTube, TikTok · 8 languages",
+  'draw.k':"From field to bracket", 'draw.s1':"16 players qualified.", 'draw.s2':"Each one gets a seed.", 'draw.s3':"Eight matchups open the bracket.",
+  'draw.note':"Shown: scenario “{n}”. Seeding isn't official yet.", 'draw.cta':"Compare scenarios",
+  'bk.swipe':"Swipe or tap a round. Tap a player to send them through.",
   'ft.noteK':"Note", 'ft.note':"Unofficial fan hub, not affiliated with Supercell. World Finals seeding hasn't been announced yet. Scenario weights are an estimate based on previous years, not an official figure. Venue per rulebook v2.7.",
   'ft.srcK':"Sources", 'ft.rulebook':"CRL 2026 rulebook v2.7 (PDF)", 'ft.x':"Clash Royale Esports on X · lineup update Sep 11",
 },
@@ -554,6 +643,9 @@ de: {
   'fm.p2b':"Jedes Spiel mit eigenem Deck. Keine Karte darf in mehr als einem Deck eines Sets vorkommen.",
   'fm.k3':"Event", 'fm.date':"Datum", 'fm.dateV':"6.–8. November 2026", 'fm.venue':"Venue", 'fm.venueV':"Huangpu Inner Bund Culture Center (laut Regelwerk)",
   'fm.prize':"Preisgeld", 'fm.prizeV':"noch offen (Regelwerk: TBC)", 'fm.streamsV':"Twitch, YouTube, TikTok · 8 Sprachen inkl. Deutsch",
+  'draw.k':"Vom Feld zum Bracket", 'draw.s1':"16 Spieler qualifiziert.", 'draw.s2':"Jeder bekommt einen Seed.", 'draw.s3':"Acht Duelle eröffnen das Bracket.",
+  'draw.note':"Gezeigt: Szenario „{n}“. Das Seeding ist noch nicht offiziell.", 'draw.cta':"Szenarien vergleichen",
+  'bk.swipe':"Wische oder tippe auf eine Runde. Tippe auf einen Spieler, um ihn weiterzuschicken.",
   'ft.noteK':"Hinweis", 'ft.note':"Inoffizieller Fan-Hub ohne Verbindung zu Supercell. Das Seeding der World Finals ist noch nicht veröffentlicht. Die Szenario-Gewichte sind eine Einschätzung aus den Vorjahren, keine offizielle Angabe. Venue laut Regelwerk v2.7.",
   'ft.srcK':"Quellen", 'ft.rulebook':"CRL 2026 Regelwerk v2.7 (PDF)", 'ft.x':"Clash Royale Esports auf X · Lineup-Update vom 11.09.",
 },
@@ -609,6 +701,9 @@ fr: {
   'fm.p2b':"Chaque partie se joue avec son propre deck. Aucune carte ne peut figurer dans plus d'un deck d'un même set.",
   'fm.k3':"Événement", 'fm.date':"Date", 'fm.dateV':"6–8 novembre 2026", 'fm.venue':"Lieu", 'fm.venueV':"Huangpu Inner Bund Culture Center (selon le règlement)",
   'fm.prize':"Cash prize", 'fm.prizeV':"à venir (règlement : TBC)", 'fm.streamsV':"Twitch, YouTube, TikTok · 8 langues dont le français",
+  'draw.k':"Du plateau au bracket", 'draw.s1':"16 joueurs qualifiés.", 'draw.s2':"Chacun reçoit un seed.", 'draw.s3':"Huit duels ouvrent le bracket.",
+  'draw.note':"Affiché : scénario « {n} ». Le seeding n'est pas encore officiel.", 'draw.cta':"Comparer les scénarios",
+  'bk.swipe':"Fais glisser ou touche un tour. Touche un joueur pour le qualifier.",
   'ft.noteK':"Remarque", 'ft.note':"Hub de fans non officiel, sans lien avec Supercell. Le seeding des World Finals n'est pas encore annoncé. Les poids des scénarios sont une estimation fondée sur les années précédentes, pas une donnée officielle. Lieu selon le règlement v2.7.",
   'ft.srcK':"Sources", 'ft.rulebook':"Règlement CRL 2026 v2.7 (PDF)", 'ft.x':"Clash Royale Esports sur X · mise à jour du lineup du 11/09",
 },
@@ -664,6 +759,9 @@ it: {
   'fm.p2b':"Ogni partita con un mazzo diverso. Nessuna carta può comparire in più di un mazzo dello stesso set.",
   'fm.k3':"Evento", 'fm.date':"Data", 'fm.dateV':"6–8 novembre 2026", 'fm.venue':"Sede", 'fm.venueV':"Huangpu Inner Bund Culture Center (secondo il regolamento)",
   'fm.prize':"Montepremi", 'fm.prizeV':"da definire (regolamento: TBC)", 'fm.streamsV':"Twitch, YouTube, TikTok · 8 lingue incluso l'italiano",
+  'draw.k':"Dai partecipanti al bracket", 'draw.s1':"16 giocatori qualificati.", 'draw.s2':"Ognuno riceve un seed.", 'draw.s3':"Otto sfide aprono il bracket.",
+  'draw.note':"Mostrato: scenario “{n}”. Il seeding non è ancora ufficiale.", 'draw.cta':"Confronta gli scenari",
+  'bk.swipe':"Scorri o tocca un turno. Tocca un giocatore per farlo avanzare.",
   'ft.noteK':"Nota", 'ft.note':"Hub non ufficiale dei fan, senza legami con Supercell. Il seeding delle World Finals non è ancora stato annunciato. I pesi degli scenari sono una stima basata sugli anni precedenti, non un dato ufficiale. Sede secondo il regolamento v2.7.",
   'ft.srcK':"Fonti", 'ft.rulebook':"Regolamento CRL 2026 v2.7 (PDF)", 'ft.x':"Clash Royale Esports su X · aggiornamento lineup dell'11/09",
 },
@@ -806,7 +904,7 @@ function toast(msg) {
 }
 
 /* ---------- hero ---------- */
-function heroMix(first) {
+function heroMix() {
   const parts = [['gt',5,'cat.gts'],['lb',8,'cat.lb'],['cn',2,'cat.cn'],['lcq',1,'cat.lcq']];
   const bar = $('#mixBar'), leg = $('#mixLegend');
   bar.innerHTML = ''; leg.innerHTML = '';
@@ -814,13 +912,44 @@ function heroMix(first) {
     const i = el('i'); i.style.flex = n; i.style.background = CAT[c].color; bar.appendChild(i);
     leg.appendChild(el('span', null, `<i class="sw" style="background:${CAT[c].color}"></i><b>${n}</b> ${t(k)}`));
   });
-  if (anim && first) gsap.from(bar.children, {scaleX:0, transformOrigin:'left', duration:.7, stagger:.08, ease:'power3.out', delay:.5});
 }
 
-function headline() {
+function headline(animate) {
   const h = $('#headline');
   h.innerHTML = t('hero.title').split(/\s+/).map(w => `<span class="w">${esc(w)}</span>`).join(' ');
-  if (anim) gsap.from(h.querySelectorAll('.w'), {opacity:0, y:14, filter:'blur(10px)', duration:.7, stagger:.09, ease:'power2.out'});
+  if (anim && animate) gsap.from(h.querySelectorAll('.w'), {opacity:0, y:14, filter:'blur(10px)', duration:.7, stagger:.09, ease:'power2.out'});
+}
+
+/* one choreographed load sequence instead of scattered effects */
+let countingUp = anim;
+function intro() {
+  headline(false);
+  if (!anim) return;
+  const tl = gsap.timeline({defaults:{ease:'power3.out'}});
+  tl.from('.top .wrap > *', {y:-12, opacity:0, duration:.5, stagger:.07})
+    .fromTo('.han', {clipPath:'inset(100% 0% 0% 0%)'}, {clipPath:'inset(0% 0% 0% 0%)', duration:1.4, ease:'power4.out', clearProps:'clipPath'}, .05)
+    .from('#dots', {opacity:0, duration:1.2}, .2)
+    .from('.hero .eyebrow', {y:10, opacity:0, duration:.5}, .25)
+    .from('#headline .w', {opacity:0, y:18, filter:'blur(10px)', duration:.75, stagger:.08, ease:'power2.out'}, .3)
+    .from('#cd', {y:22, opacity:0, duration:.8}, .45)
+    .add(countUp, .65)
+    .from('.hero .lede', {y:12, opacity:0, duration:.6}, .8)
+    .from('#mixBar i', {scaleX:0, transformOrigin:'left', duration:.7, stagger:.08}, .9)
+    .from('#mixLegend > *', {opacity:0, y:6, duration:.4, stagger:.05}, 1)
+    .from('.cd .day, .cd-note', {opacity:0, y:8, duration:.4, stagger:.06}, 1.05);
+}
+function remaining() {
+  const now = Date.now();
+  let diff = START - now;
+  if (now >= START && now < END) diff = END - now; else if (now >= END) diff = 0;
+  diff = Math.max(0, diff);
+  return [Math.floor(diff / 864e5), Math.floor(diff / 36e5) % 24, Math.floor(diff / 6e4) % 60, Math.floor(diff / 1e3) % 60];
+}
+function countUp() {
+  const v = remaining(), o = {d:0, h:0, m:0}, ids = ['cdD','cdH','cdM'];
+  gsap.to(o, {d:v[0], h:v[1], m:v[2], duration:1.1, ease:'power2.out',
+    onUpdate() { [o.d, o.h, o.m].forEach((x, i) => $('#' + ids[i]).textContent = String(Math.round(x)).padStart(2, '0')); },
+    onComplete() { countingUp = false; ids.forEach((id, i) => cdLast[i] = $('#' + id).textContent); tick(); }});
 }
 
 const START = Date.UTC(2026, 10, 5, 16, 0, 0);   // 6 Nov 00:00 UTC+8
@@ -828,14 +957,13 @@ const END = Date.UTC(2026, 10, 8, 16, 0, 0);     // 9 Nov 00:00 UTC+8
 const cdLast = ['', '', '', ''];
 function tick() {
   const now = Date.now();
-  let diff = START - now, lab = 'cd.toStart', st = 'cd.sCount';
-  if (now >= START && now < END) { diff = END - now; lab = 'cd.toEnd'; st = 'cd.sLive'; }
-  else if (now >= END) { diff = 0; lab = 'cd.over'; st = 'cd.sOver'; }
+  let lab = 'cd.toStart', st = 'cd.sCount';
+  if (now >= START && now < END) { lab = 'cd.toEnd'; st = 'cd.sLive'; }
+  else if (now >= END) { lab = 'cd.over'; st = 'cd.sOver'; }
   $('#cdLabel').textContent = t(lab); $('#cdStatus').textContent = t(st);
-  diff = Math.max(0, diff);
-  const v = [Math.floor(diff / 864e5), Math.floor(diff / 36e5) % 24, Math.floor(diff / 6e4) % 60, Math.floor(diff / 1e3) % 60].map(x => String(x).padStart(2, '0'));
+  const v = remaining().map(x => String(x).padStart(2, '0'));
   ['cdD','cdH','cdM','cdS'].forEach((id, i) => {
-    if (v[i] === cdLast[i]) return;
+    if (v[i] === cdLast[i] || (countingUp && i < 3)) return;
     const e = $('#' + id); e.textContent = v[i];
     if (anim && cdLast[i] !== '') gsap.fromTo(e, {yPercent:-35, opacity:0}, {yPercent:0, opacity:1, duration:.35, ease:'power2.out'});
     cdLast[i] = v[i];
@@ -874,6 +1002,122 @@ function dots() {
     hero.addEventListener('pointerleave', () => { mx = my = -999; q(); });
   }
   new ResizeObserver(size).observe(hero);
+}
+
+/* ---------- smooth scroll + reveals ---------- */
+const hh = () => $('.top').offsetHeight;
+const setHH = () => document.documentElement.style.setProperty('--hh', hh() + 'px');
+let lenis = null;
+function smooth() {
+  if (!anim || !window.Lenis) return;
+  lenis = new Lenis({lerp:.1, smoothWheel:true});
+  if (hasST) lenis.on('scroll', ScrollTrigger.update);
+  gsap.ticker.add(time => lenis.raf(time * 1000));
+  gsap.ticker.lagSmoothing(0);
+  document.documentElement.style.scrollBehavior = 'auto';
+}
+document.addEventListener('click', e => {
+  const a = e.target.closest('a[href^="#"]');
+  if (!a) return;
+  const target = document.querySelector(a.getAttribute('href'));
+  if (!target) return;
+  e.preventDefault();
+  const off = -(hh() + 6);
+  if (lenis) lenis.scrollTo(target, {offset:off, duration:1.3});
+  else window.scrollTo({top:target.getBoundingClientRect().top + window.scrollY + off, behavior:RM ? 'auto' : 'smooth'});
+  try { history.replaceState(null, '', location.pathname + location.search + a.getAttribute('href')); } catch (err) {}
+});
+function reveals() {
+  if (!anim || !hasST) return;
+  gsap.to('.han', {yPercent:16, ease:'none', scrollTrigger:{trigger:'.hero', start:'top top', end:'bottom top', scrub:true}});
+  gsap.utils.toArray('.sec-head').forEach(h => gsap.from(h.children, {y:30, opacity:0, duration:.8, stagger:.1, ease:'power3.out', scrollTrigger:{trigger:h, start:'top 86%', once:true}}));
+  gsap.utils.toArray('.grp-head, .seed-layout, .strips, .bk-bar, .places, .fmt .panel').forEach(e => gsap.from(e, {y:26, opacity:0, duration:.75, ease:'power3.out', scrollTrigger:{trigger:e, start:'top 90%', once:true}}));
+  gsap.from('.wordmark', {yPercent:40, opacity:0, duration:1, ease:'power3.out', scrollTrigger:{trigger:'footer', start:'top 92%', once:true}});
+}
+
+/* ---------- draw: the field becomes the bracket ---------- */
+let drawTL = null, drawW = 0;
+function buildDraw() {
+  const field = $('#drawField'), stage = $('#drawStage');
+  if (drawTL) { drawTL.scrollTrigger && drawTL.scrollTrigger.kill(); drawTL.kill(); drawTL = null; }
+  field.innerHTML = '';
+  drawW = window.innerWidth;
+  $('#drawNote').innerHTML = `${esc(t('draw.note', {n:scenName(state.scen)}))} <a href="#seeding">${t('draw.cta')}</a>`;
+  const caps = [...document.querySelectorAll('.draw-cap')], fills = [...document.querySelectorAll('.draw-steps b')];
+
+  const seeds = seedsNow();
+  const mobile = window.innerWidth <= 760;
+  const cols = mobile ? 2 : 4, rows = 16 / cols, groups = 8 / cols;
+  const W = field.clientWidth, H = field.clientHeight;
+  const gap = mobile ? 6 : 10, pairGap = 4, labelH = 20, groupGap = mobile ? 12 : 26;
+  let tileH = (H - (groups - 1) * groupGap - groups * (labelH + pairGap)) / (2 * groups);
+  tileH = Math.max(28, Math.min(mobile ? 46 : 76, tileH));
+  const tileW = (W - (cols - 1) * gap) / cols;
+  const fs = Math.max(12, Math.min(tileH * .46, (tileW - (mobile ? 40 : 74)) / 7.6, 34));
+
+  const gridH = rows * tileH + (rows - 1) * gap, gy0 = Math.max(0, (H - gridH) / 2);
+  const gx = k => (k % cols) * (tileW + gap), gy = k => gy0 + Math.floor(k / cols) * (tileH + gap);
+  const groupH = labelH + 2 * tileH + pairGap, pairH = groups * groupH + (groups - 1) * groupGap, py0 = Math.max(0, (H - pairH) / 2);
+  const px = m => (m % cols) * (tileW + gap);
+  const pyTop = m => py0 + Math.floor(m / cols) * (groupH + groupGap);
+  const py = (m, slot) => pyTop(m) + labelH + slot * (tileH + pairGap);
+  const matchOf = n => { const sd = seeds.indexOf(n) + 1; const m = PAIRS.findIndex(p => p.includes(sd)); return [m, PAIRS[m][0] === sd ? 0 : 1]; };
+
+  const tiles = FIELD.map((n, k) => {
+    const d = el('div', 'dt', `<b class="ds">${seeds.indexOf(n) + 1}</b><span class="dn"><i class="sw" style="background:${CAT[P[n].cat].color}"></i><span>${esc(n)}</span></span><span class="dc">${P[n].cc}</span>`);
+    Object.assign(d.style, {width:tileW + 'px', height:tileH + 'px', fontSize:fs + 'px'});
+    field.appendChild(d);
+    return {d, n, k};
+  });
+  // shrink the type until the longest name fits its tile
+  let fit = 1;
+  tiles.forEach(({d}) => { const sp = d.querySelector('.dn span'); if (sp.scrollWidth > sp.clientWidth) fit = Math.min(fit, sp.clientWidth / sp.scrollWidth); });
+  if (fit < 1) { const f2 = Math.max(11, Math.floor(fs * fit * .97)); tiles.forEach(({d}) => d.style.fontSize = f2 + 'px'); }
+  const labels = PAIRS.map(([a, b], m) => {
+    const l = el('div', 'dl', `M${m + 1} · <b>${a}</b> vs <b>${b}</b>`);
+    field.appendChild(l);
+    l.style.transform = `translate(${px(m)}px, ${pyTop(m)}px)`;
+    return l;
+  });
+
+  if (!anim || !hasST) {
+    // static end state: the eight matchups
+    tiles.forEach(({d, n}) => { const [m, s] = matchOf(n); d.style.transform = `translate(${px(m)}px, ${py(m, s)}px)`; d.querySelector('.ds').style.opacity = 1; });
+    labels.forEach(l => l.style.opacity = 1);
+    caps.forEach((c, i) => c.style.opacity = i === 2 ? 1 : 0);
+    fills.forEach(f => f.style.transform = 'scaleX(1)');
+    return;
+  }
+
+  tiles.forEach(({d, k}) => gsap.set(d, {x:gx(k), y:gy(k)}));
+  gsap.set(caps, {opacity:i => i === 0 ? 1 : 0, y:0});
+  gsap.set(fills, {scaleX:i => i === 0 ? 1 : 0});
+  gsap.set(labels, {opacity:0});
+
+  const tl = gsap.timeline({scrollTrigger:{trigger:stage, start:() => `top ${hh()}px`, end:'+=230%', pin:true, scrub:.6, anticipatePin:1, refreshPriority:1}});
+  tl.to({}, {duration:.35})
+    .addLabel('s2')
+    .to(caps[0], {opacity:0, y:-18, duration:.2}, 's2')
+    .fromTo(caps[1], {opacity:0, y:18}, {opacity:1, y:0, duration:.2}, 's2+=.12')
+    .to(fills[1], {scaleX:1, duration:.4, ease:'none'}, 's2');
+  tiles.forEach(({d, n}) => {
+    const s = seeds.indexOf(n);
+    tl.to(d, {x:gx(s), y:gy(s), duration:.6, ease:'power2.inOut'}, `s2+=${s * .014}`)
+      .to(d.querySelector('.ds'), {opacity:1, duration:.2}, `s2+=${.3 + s * .014}`);
+  });
+  tl.to({}, {duration:.35})
+    .addLabel('s3')
+    .to(caps[1], {opacity:0, y:-18, duration:.2}, 's3')
+    .fromTo(caps[2], {opacity:0, y:18}, {opacity:1, y:0, duration:.2}, 's3+=.12')
+    .to(fills[2], {scaleX:1, duration:.4, ease:'none'}, 's3');
+  tiles.forEach(({d, n}) => {
+    const [m, s] = matchOf(n);
+    tl.to(d, {x:px(m), y:py(m, s), duration:.6, ease:'power2.inOut'}, `s3+=${m * .035}`);
+  });
+  labels.forEach((l, m) => tl.to(l, {opacity:1, duration:.2}, `s3+=${.45 + m * .035}`));
+  tl.to({}, {duration:.3});
+  drawTL = tl;
+  ScrollTrigger.refresh();
 }
 
 /* ---------- roster ---------- */
@@ -951,6 +1195,7 @@ function setScen(id, quiet) {
   scenLabels(); moveInd();
   renderSeeds(true); renderSide(); renderStrips();
   fillBracket('fav');
+  buildDraw();
   if (!quiet) toast(t('t.scen', {n:scenName(id)}));
 }
 
@@ -1077,12 +1322,59 @@ function placeholder(src) {
 function fillBracket(mode) {
   if (mode === 'clear') { state.picks = {}; state.scores = {}; }
   else { const r = runBracket(seedsNow(), mode, Math.random); state.picks = r.picks; state.scores = r.scores; }
+  state.lastPick = null;
   renderBracket(true);
 }
+
+/* wave = how many rounds deep a match sits; drives the cascade timing */
+const WAVE = {};
+for (const id of ORDER) WAVE[id] = 1 + Math.max(0, ...M[id].src.map(s => s.s ? 0 : s.w ? WAVE[s.w] : s.l ? WAVE[s.l] : WAVE.GF));
+const nextOf = id => { for (const t2 of ORDER) { const i = M[t2].src.findIndex(s => s.w === id); if (i > -1) return [t2, i]; } return null; };
+const dropOf = id => { for (const t2 of ORDER) { const i = M[t2].src.findIndex(s => s.l === id); if (i > -1) return [t2, i]; } return null; };
+
+const mqPhone = window.matchMedia('(max-width: 760px)');
+function matchCard(id, R, seeds, flow) {
+  const m = M[id], s = R.slots[id];
+  const card = el('div', 'm' + (flow ? ' flow' : '') + (id === 'GF' || id === 'GR' ? ' final' : '') + (id === 'GR' && !s ? ' off' : ''));
+  if (!flow) { card.style.left = POS[id].x + 'px'; card.style.top = POS[id].y + 'px'; }
+  card.appendChild(el('span', 'ml', `${m.lab} · Bo${m.bo}`));
+  const box = el('div', 'box'), rowsOut = [];
+  [0, 1].forEach(i => {
+    const n = s ? s[i] : null;
+    const b = el('button', 'r'); b.type = 'button';
+    if (!n) {
+      b.classList.add('ph'); b.disabled = true;
+      b.innerHTML = `<i class="ct"></i><span class="s"></span><span class="n">${esc(id === 'GR' ? t('bk.grPh') : placeholder(m.src[i]))}</span><span class="p"></span>`;
+    } else {
+      const seed = seeds.indexOf(n) + 1, other = s[1 - i], w = R.win[id];
+      let ptxt = '';
+      if (w) {
+        const sc = state.scores[id];
+        ptxt = sc ? String(sc[i]) : (w === n ? 'W' : '');
+        b.classList.add(w === n ? 'win' : 'lose');
+      }
+      b.dataset.name = n; b.dataset.mid = id;
+      b.innerHTML = `<i class="ct" style="background:${CAT[P[n].cat].color}"></i><span class="s">${seed}</span><span class="n">${esc(n)}</span><span class="p">${ptxt}</span>`;
+      if (other) b.addEventListener('click', () => pick(id, n)); else b.disabled = true;
+      rowsOut.push([b, id + i + n]);
+    }
+    box.appendChild(b);
+  });
+  card.appendChild(box);
+  return {card, rows:rowsOut};
+}
+
 function renderBracket(cascade) {
   const seeds = seedsNow();
   const R = resolve(seeds, state.picks);
   for (const id in state.scores) if (!state.picks[id]) delete state.scores[id];
+  const phone = mqPhone.matches;
+  $('#bkStage').hidden = phone; $('#bkm').hidden = !phone;
+  if (phone) renderPhone(R, seeds, cascade); else renderDesk(R, seeds, cascade);
+  renderPlaces(R);
+}
+
+function renderDesk(R, seeds, cascade) {
   const B = $('#bk');
   B.style.width = BW + 'px'; B.style.height = BH + 'px';
   B.innerHTML = '';
@@ -1092,7 +1384,7 @@ function renderBracket(cascade) {
   const NS = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(NS, 'svg'); svg.setAttribute('width', BW); svg.setAttribute('height', BH);
   const rowY = (id, i) => POS[id].y + 1 + 14 + i * 28;
-  const active = new Set(), newPaths = [];
+  const active = new Set(), newPaths = [], pathAt = {};
   for (const id of ORDER) {
     if (id === 'GR' && !R.slots.GR) continue;
     M[id].src.forEach((src, i) => {
@@ -1103,7 +1395,8 @@ function renderBracket(cascade) {
       const p = document.createElementNS(NS, 'path');
       p.setAttribute('d', `M${sx} ${sy}H${tx - 16}V${ty}H${tx}`);
       const key = from + '>' + id + i, who = R.win[from];
-      if (who) { p.classList.add('act'); p.dataset.p = who; active.add(key); if (!prevActive.has(key)) newPaths.push(p); }
+      pathAt[from + '>' + id] = p;
+      if (who) { p.classList.add('act'); p.dataset.p = who; active.add(key); if (!prevActive.has(key)) newPaths.push([p, from]); }
       svg.appendChild(p);
     });
   }
@@ -1111,48 +1404,106 @@ function renderBracket(cascade) {
 
   const filled = new Set(), newRows = [];
   for (const id of ORDER) {
-    const m = M[id], s = R.slots[id];
-    const cardEl = el('div', 'm' + (id === 'GF' || id === 'GR' ? ' final' : '') + (id === 'GR' && !s ? ' off' : ''));
-    cardEl.style.left = POS[id].x + 'px'; cardEl.style.top = POS[id].y + 'px';
-    cardEl.appendChild(el('span', 'ml', `${m.lab} · Bo${m.bo}`));
-    const box = el('div', 'box');
-    [0, 1].forEach(i => {
-      const n = s ? s[i] : null;
-      const b = el('button', 'r'); b.type = 'button';
-      if (!n) {
-        b.classList.add('ph'); b.disabled = true;
-        b.innerHTML = `<i class="ct"></i><span class="s"></span><span class="n">${esc(id === 'GR' ? t('bk.grPh') : placeholder(m.src[i]))}</span><span class="p"></span>`;
-      } else {
-        const seed = seeds.indexOf(n) + 1, other = s[1 - i], w = R.win[id];
-        let ptxt = '';
-        if (w) {
-          const sc = state.scores[id];
-          ptxt = sc ? String(sc[i]) : (w === n ? 'W' : '');
-          b.classList.add(w === n ? 'win' : 'lose');
-        }
-        b.dataset.name = n;
-        b.innerHTML = `<i class="ct" style="background:${CAT[P[n].cat].color}"></i><span class="s">${seed}</span><span class="n">${esc(n)}</span><span class="p">${ptxt}</span>`;
-        if (other) b.addEventListener('click', () => pick(id, n)); else b.disabled = true;
-        const key = id + i + n; filled.add(key);
-        if (!prevFilled.has(key)) newRows.push(b);
-      }
-      box.appendChild(b);
-    });
-    cardEl.appendChild(box); B.appendChild(cardEl);
+    const {card, rows} = matchCard(id, R, seeds, false);
+    rows.forEach(([b, key]) => { filled.add(key); if (!prevFilled.has(key)) newRows.push(b); });
+    B.appendChild(card);
   }
-
   B.querySelectorAll('.r[data-name]').forEach(b => {
     b.addEventListener('mouseenter', () => hlPlayer(b.dataset.name));
     b.addEventListener('mouseleave', () => hlPlayer(null));
   });
 
   if (anim && cascade !== false) {
-    newPaths.forEach(p => { const L = p.getTotalLength(); gsap.fromTo(p, {strokeDasharray:L, strokeDashoffset:L}, {strokeDashoffset:0, duration:.45, ease:'power2.out', clearProps:'strokeDasharray,strokeDashoffset'}); });
-    if (newRows.length) gsap.from(newRows.map(r => r.querySelector('.n')), {opacity:0, x:-8, duration:.35, stagger:cascade === true ? .008 : 0, ease:'power2.out'});
+    const STEP = .16, full = cascade === true;
+    newPaths.forEach(([p, from]) => {
+      const L = p.getTotalLength(), delay = full ? (WAVE[from] - 1) * STEP : 0;
+      gsap.fromTo(p, {strokeDasharray:L, strokeDashoffset:L}, {strokeDashoffset:0, duration:.5, delay, ease:'power2.out', clearProps:'strokeDasharray,strokeDashoffset'});
+      if (full && window.MotionPathPlugin) chip(B, p, R.win[from], delay);
+    });
+    newRows.forEach(b => {
+      const delay = full ? (WAVE[b.dataset.mid] - 1) * STEP + (WAVE[b.dataset.mid] > 1 ? .4 : 0) : .35;
+      gsap.from(b.querySelector('.n'), {opacity:0, x:-8, duration:.35, delay, ease:'power2.out'});
+    });
+    // a single pick: send the winner along its line and drop the loser into the lower bracket
+    const id = state.lastPick;
+    if (cascade === 'step' && id && R.win[id] && window.MotionPathPlugin) {
+      const nx = nextOf(id) || (id === 'GF' && R.slots.GR ? ['GR', 0] : null);
+      if (nx && pathAt[id + '>' + nx[0]]) chip(B, pathAt[id + '>' + nx[0]], R.win[id], 0);
+      const dr = dropOf(id);
+      if (dr) {
+        const ghost = document.createElementNS(NS, 'path');
+        const x1 = POS[id].x + CW / 2, y1 = POS[id].y + CH, x2 = POS[dr[0]].x + 40, y2 = rowY(dr[0], dr[1]);
+        ghost.setAttribute('d', `M${x1} ${y1}C${x1} ${y1 + 120},${x2 - 80} ${y2},${x2} ${y2}`);
+        ghost.classList.add('ghost'); svg.appendChild(ghost);
+        chip(B, ghost, R.lose[id], .05, 'drop', () => ghost.remove());
+      }
+    }
   }
   prevActive = active; prevFilled = filled;
-  renderPlaces(R);
 }
+function chip(B, path, text, delay, cls = '', done) {
+  const c = el('div', 'chip ' + cls, esc(text));
+  B.appendChild(c);
+  const dur = cls ? .8 : .55;
+  gsap.timeline({delay, onComplete:() => { c.remove(); done && done(); }})
+    .to(c, {opacity:1, duration:.1})
+    .to(c, {duration:dur, ease:'power1.inOut', motionPath:{path, align:path, alignOrigin:[.5, .5]}}, 0)
+    .to(c, {opacity:0, duration:.15}, dur - .1);
+}
+
+const PHONE_ROUNDS = [
+  ['UB R1', () => `<b>Upper</b> · ${t('bk.r1')}`, ['U1','U2','U3','U4','U5','U6','U7','U8']],
+  ['UB QF', () => `<b>Upper</b> · ${t('bk.qf')}`, ['UQ1','UQ2','UQ3','UQ4']],
+  ['UB SF', () => `<b>Upper</b> · ${t('bk.sf')}`, ['US1','US2']],
+  ['UB F',  () => '<b>Upper Final</b>', ['UF']],
+  ['LB R1', () => `<b>Lower</b> · ${t('bk.r1')}`, ['L1','L2','L3','L4']],
+  ['LB R2', () => `<b>Lower</b> · ${t('bk.r2')}`, ['L5','L6','L7','L8']],
+  ['LB R3', () => `<b>Lower</b> · ${t('bk.r3')}`, ['L9','L10']],
+  ['LB QF', () => `<b>Lower</b> · ${t('bk.qf')}`, ['L11','L12']],
+  ['LB SF', () => `<b>Lower</b> · ${t('bk.sf')}`, ['L13']],
+  ['LB F',  () => '<b>Lower Final</b>', ['L14']],
+  ['GF',    () => '<b>Grand Final</b>', ['GF','GR']],
+];
+const roundOf = id => PHONE_ROUNDS.findIndex(r => r[2].includes(id));
+function renderPhone(R, seeds, cascade) {
+  const box = $('#bkm');
+  box.innerHTML = '';
+  const tabs = el('div', 'mb-tabs'), track = el('div', 'mb-track');
+  tabs.setAttribute('data-lenis-prevent', ''); track.setAttribute('data-lenis-prevent', '');
+  const newRows = [], filled = new Set();
+  PHONE_ROUNDS.forEach(([k, head, ids], ri) => {
+    const tb = el('button', 'mb-tab', k); tb.type = 'button';
+    tb.addEventListener('click', () => track.scrollTo({left:ri * (track.clientWidth + 12), behavior:RM ? 'auto' : 'smooth'}));
+    tabs.appendChild(tb);
+    const col = el('div', 'mb-col');
+    col.appendChild(el('div', 'mb-h', `${head()} · Bo${M[ids[0]].bo}`));
+    ids.forEach(id => { const {card, rows} = matchCard(id, R, seeds, true); rows.forEach(([b, key]) => { filled.add(key); if (!prevFilled.has(key)) newRows.push(b); }); col.appendChild(card); });
+    track.appendChild(col);
+  });
+  box.append(tabs, track, el('p', 'mb-hint', t('bk.swipe')));
+  const setTab = i => {
+    state.mbIdx = i;
+    [...tabs.children].forEach((b, k) => b.classList.toggle('on', k === i));
+    const on = tabs.children[i];
+    if (on) tabs.scrollTo({left:on.offsetLeft - 12, behavior:'auto'});
+  };
+  track.scrollLeft = (state.mbIdx || 0) * (track.clientWidth + 12);
+  setTab(state.mbIdx || 0);
+  track.addEventListener('scroll', () => {
+    const i = Math.round(track.scrollLeft / (track.clientWidth + 12));
+    if (i !== state.mbIdx) setTab(i);
+  }, {passive:true});
+
+  const id = state.lastPick;
+  if (cascade === 'step' && id && R.win[id]) {
+    const nx = nextOf(id) || (id === 'GF' && R.slots.GR ? ['GR', 0] : null);
+    if (nx) { const tb = tabs.children[roundOf(nx[0])]; if (tb && roundOf(nx[0]) !== state.mbIdx) { tb.classList.add('ping'); if (anim) gsap.fromTo(tb, {scale:1}, {scale:1.08, duration:.18, yoyo:true, repeat:1}); } }
+  }
+  if (anim && cascade !== false) newRows.forEach(b => gsap.from(b.querySelector('.n'), {opacity:0, x:-8, duration:.35, delay:cascade === true ? .05 : .1, ease:'power2.out'}));
+  prevFilled = filled;
+}
+mqPhone.addEventListener('change', () => renderBracket(false));
+
 function hlPlayer(n) {
   const B = $('#bk');
   B.querySelectorAll('.hl').forEach(e => e.classList.remove('hl'));
@@ -1163,6 +1514,7 @@ function hlPlayer(n) {
 function pick(id, n) {
   if (state.picks[id] === n) delete state.picks[id]; else state.picks[id] = n;
   delete state.scores[id];
+  state.lastPick = state.picks[id] ? id : null;
   renderBracket('step');
 }
 function renderPlaces(R) {
@@ -1226,14 +1578,14 @@ function setLang(l) {
   const u = new URL(location.href);
   if (l === 'en') u.searchParams.delete('lang'); else u.searchParams.set('lang', l);
   try { history.replaceState(null, '', u); } catch (e) {}
-  applyStatic(); headline(); heroMix(false); tick();
-  roster(); scenLabels(); renderSeeds(false); renderSide(false); renderStrips(); catLegend(); renderBracket(false);
+  applyStatic(); headline(false); heroMix(); tick();
+  roster(); scenLabels(); renderSeeds(false); renderSide(false); renderStrips(); catLegend(); renderBracket(false); buildDraw();
   requestAnimationFrame(() => { moveInd(true); navOn(); });
 }
 
 /* ---------- boot ---------- */
 langSwitch(); applyStatic();
-headline(); heroMix(true); tick(); setInterval(tick, 1000); movingBorder(); dots();
+setHH(); heroMix(); intro(); tick(); setInterval(tick, 1000); movingBorder(); dots(); smooth();
 roster();
 scenTabs(); makeRows(); catLegend();
 $('#inheritToggle').addEventListener('click', e => {
@@ -1249,7 +1601,14 @@ $('#bSim').addEventListener('click', () => { fillBracket('sim'); toast(t('t.rand
 $('#bClr').addEventListener('click', () => { fillBracket('clear'); toast(t('t.clear')); });
 setScen('A', true);
 nav();
+reveals();
 requestAnimationFrame(() => moveInd(true));
+let rsz = 0;
+window.addEventListener('resize', () => {
+  clearTimeout(rsz);
+  rsz = setTimeout(() => { setHH(); if (window.innerWidth !== drawW) buildDraw(); }, 200);
+});
+if (document.fonts) document.fonts.ready.then(() => { buildDraw(); });
 })();
 </script>
 </body>
