@@ -7,6 +7,13 @@
 <meta name="description" content="Unofficial hub for the Clash Royale League 2026 World Finals in Shanghai: countdown, players, seeding scenarios and an interactive double elimination bracket.">
 <meta property="og:title" content="CRL26 World Finals Hub">
 <meta property="og:description" content="Countdown, players, seeding scenarios and an interactive bracket for the CRL 2026 World Finals in Shanghai.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tojacob03.github.io/crl26-world-finals-hub/">
+<meta property="og:image" content="https://tojacob03.github.io/crl26-world-finals-hub/assets/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://tojacob03.github.io/crl26-world-finals-hub/assets/og.jpg">
 <meta name="theme-color" content="#0B0F18">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230B0F18'/%3E%3Ctext x='16' y='22' text-anchor='middle' font-family='Arial Narrow,Arial,sans-serif' font-weight='700' font-size='16' fill='%23F3B53A'%3E26%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -59,6 +66,9 @@ button{font:inherit;color:inherit}
 /* hero */
 .hero{position:relative;border-bottom:1px solid var(--line);overflow:hidden}
 .hero canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.hero-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.hero-bg img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 32%;opacity:.26}
+@media (max-width:900px){.hero-bg img{opacity:.2;object-position:40% 30%}}
 .han{position:absolute;left:-.03em;bottom:-.4em;font-family:var(--f-han);font-weight:900;font-size:clamp(260px,40vw,640px);line-height:1;letter-spacing:-.06em;color:var(--han);pointer-events:none;user-select:none;white-space:nowrap}
 @media (max-width:900px){.han{font-size:64vw;bottom:-.3em}}
 
@@ -260,6 +270,14 @@ select{appearance:none;background:var(--surface);border:1px solid var(--line-2);
 .r.hl .n{color:var(--gold)}
 .m.off{opacity:.35}
 .ghost{stroke:none!important}
+.gf-art{position:absolute;margin:0;border-radius:10px;overflow:hidden;border:1px solid var(--line-2);background:var(--bg)}
+.gf-art img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 25%}
+.gf-art figcaption{position:absolute;left:0;right:0;bottom:0;padding:9px 12px;background:var(--bg);font-family:var(--f-mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.gf-art figcaption b{color:var(--gold);font-weight:600}
+.mb-art{margin:0;border-radius:9px;overflow:hidden;aspect-ratio:16/10;max-width:100%}
+.mb-art img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 22%}
+.place.champ{position:relative;overflow:hidden;padding-right:104px}
+.champ-emote{position:absolute;right:-10px;bottom:-14px;width:118px;height:auto;pointer-events:none}
 .chip{position:absolute;left:0;top:0;z-index:5;pointer-events:none;font-family:var(--f-mono);font-size:10px;font-weight:600;line-height:1;padding:4px 7px;border-radius:999px;background:var(--gold);color:var(--bg);white-space:nowrap;opacity:0}
 .chip.drop{background:var(--bg);color:var(--red);box-shadow:inset 0 0 0 1px var(--red)}
 
@@ -335,6 +353,7 @@ footer a:hover{text-decoration-color:var(--gold)}
 
 <main>
   <section class="hero" id="top">
+    <div class="hero-bg" aria-hidden="true"><img src="assets/forbidden-city-2400.webp" srcset="assets/forbidden-city-1200.webp 1200w, assets/forbidden-city-2400.webp 2400w" sizes="100vw" alt="" fetchpriority="high" decoding="async"></div>
     <div class="han" aria-hidden="true">上海</div>
     <canvas id="dots" aria-hidden="true"></canvas>
     <div class="wrap">
@@ -509,7 +528,7 @@ footer a:hover{text-decoration-color:var(--gold)}
         <li><a href="https://royaleapi.com/blog/crl-2026-info" target="_blank" rel="noopener">RoyaleAPI · CRL 2026 Info</a></li>
       </ul>
     </div>
-    <p class="legal" lang="en">This material is unofficial and is not endorsed by Supercell. For more information see Supercell's Fan Content Policy: <a href="https://www.supercell.com/fan-content-policy" target="_blank" rel="noopener">www.supercell.com/fan-content-policy</a>.</p>
+    <p class="legal" lang="en">Artwork from the Supercell Fan Kit. This material is unofficial and is not endorsed by Supercell. For more information see Supercell's Fan Content Policy: <a href="https://www.supercell.com/fan-content-policy" target="_blank" rel="noopener">www.supercell.com/fan-content-policy</a>.</p>
   </div>
 </footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -928,6 +947,7 @@ function intro() {
   const tl = gsap.timeline({defaults:{ease:'power3.out'}});
   tl.from('.top .wrap > *', {y:-12, opacity:0, duration:.5, stagger:.07})
     .fromTo('.han', {clipPath:'inset(100% 0% 0% 0%)'}, {clipPath:'inset(0% 0% 0% 0%)', duration:1.4, ease:'power4.out', clearProps:'clipPath'}, .05)
+    .from('.hero-bg img', {opacity:0, scale:1.08, duration:1.8, ease:'power2.out'}, 0)
     .from('#dots', {opacity:0, duration:1.2}, .2)
     .from('.hero .eyebrow', {y:10, opacity:0, duration:.5}, .25)
     .from('#headline .w', {opacity:0, y:18, filter:'blur(10px)', duration:.75, stagger:.08, ease:'power2.out'}, .3)
@@ -1029,6 +1049,7 @@ document.addEventListener('click', e => {
 });
 function reveals() {
   if (!anim || !hasST) return;
+  gsap.to('.hero-bg img', {yPercent:10, ease:'none', scrollTrigger:{trigger:'.hero', start:'top top', end:'bottom top', scrub:true}});
   gsap.to('.han', {yPercent:16, ease:'none', scrollTrigger:{trigger:'.hero', start:'top top', end:'bottom top', scrub:true}});
   gsap.utils.toArray('.sec-head').forEach(h => gsap.from(h.children, {y:30, opacity:0, duration:.8, stagger:.1, ease:'power3.out', scrollTrigger:{trigger:h, start:'top 86%', once:true}}));
   gsap.utils.toArray('.grp-head, .seed-layout, .strips, .bk-bar, .places, .fmt .panel').forEach(e => gsap.from(e, {y:26, opacity:0, duration:.75, ease:'power3.out', scrollTrigger:{trigger:e, start:'top 90%', once:true}}));
@@ -1380,6 +1401,10 @@ function renderDesk(R, seeds, cascade) {
   B.innerHTML = '';
   heads().forEach(([c, y, h]) => { const e = el('div', 'colh', h); e.style.left = c * COLW + 'px'; e.style.top = y + 'px'; B.appendChild(e); });
   const dv = el('div', 'bk-div'); dv.style.top = (LT - 70) + 'px'; dv.style.width = (6 * COLW - 36) + 'px'; B.appendChild(dv);
+  const art = el('figure', 'gf-art', `<img src="assets/kings-2v2-800.webp" alt="" loading="lazy" decoding="async"><figcaption><b>Grand Final</b> · Bo5 · ${(t('cd.d3').match(/<b>(.*?)<\/b>/) || ['', ''])[1]}</figcaption>`);
+  const artTop = UT - 40, artH = Math.min(2 * COLW - (COLW - CW), POS.GF.y - artTop - 40);
+  Object.assign(art.style, {left:6 * COLW + 'px', top:artTop + 'px', width:(2 * COLW - (COLW - CW)) + 'px', height:artH + 'px'});
+  B.appendChild(art);
 
   const NS = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(NS, 'svg'); svg.setAttribute('width', BW); svg.setAttribute('height', BH);
@@ -1477,6 +1502,7 @@ function renderPhone(R, seeds, cascade) {
     tabs.appendChild(tb);
     const col = el('div', 'mb-col');
     col.appendChild(el('div', 'mb-h', `${head()} · Bo${M[ids[0]].bo}`));
+    if (k === 'GF') col.appendChild(el('figure', 'mb-art', '<img src="assets/kings-2v2-800.webp" alt="" loading="lazy" decoding="async">'));
     ids.forEach(id => { const {card, rows} = matchCard(id, R, seeds, true); rows.forEach(([b, key]) => { filled.add(key); if (!prevFilled.has(key)) newRows.push(b); }); col.appendChild(card); });
     track.appendChild(col);
   });
@@ -1529,10 +1555,13 @@ function renderPlaces(R) {
   const Pl = $('#places'); const before = Pl.querySelector('.champ .pn')?.textContent;
   Pl.innerHTML = '';
   groups.forEach(([k, names, cls]) => {
-    Pl.appendChild(el('div', 'place ' + (cls || ''), `<div class="pl">${t(k)}</div><div class="pn">${names.length ? names.map(esc).join(', ') : `<i>${t('pc.open')}</i>`}</div>`));
+    Pl.appendChild(el('div', 'place ' + (cls || ''), `<div class="pl">${t(k)}</div><div class="pn">${names.length ? names.map(esc).join(', ') : `<i>${t('pc.open')}</i>`}</div>${cls && names.length ? '<img class="champ-emote" src="assets/champion-emote.webp" alt="" width="118" height="71">' : ''}`));
   });
   const now = Pl.querySelector('.champ .pn');
-  if (anim && R.champ && before !== undefined && before !== now.textContent) gsap.from(now, {opacity:0, y:10, filter:'blur(6px)', duration:.5, ease:'power2.out'});
+  if (anim && R.champ && before !== undefined && before !== now.textContent) {
+    gsap.from(now, {opacity:0, y:10, filter:'blur(6px)', duration:.5, ease:'power2.out'});
+    gsap.from(Pl.querySelector('.champ-emote'), {y:40, rotate:-8, opacity:0, duration:.6, ease:'back.out(1.6)', delay:.1});
+  }
 }
 
 /* ---------- nav ---------- */
