@@ -81,6 +81,33 @@ button{font:inherit;color:inherit}
 @media (min-width:761px){.draw-caps{height:1.05em}}
 .draw-cap{position:absolute;inset:0;text-wrap:balance}
 .draw-cap + .draw-cap{opacity:0}
+.draw-kick{position:relative;height:1.5em}
+.draw-kick .kicker{position:absolute;left:0;top:0;white-space:nowrap}
+.draw-kick .kicker.st{opacity:0}
+.flight{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
+.draw-stage > .wrap{position:relative}
+
+/* flythrough */
+.tunnel{border-top:1px solid var(--line);margin-top:72px}
+.tn-stage{position:relative;height:calc(100svh - var(--hh,58px));min-height:520px;overflow:hidden;background:var(--bg)}
+.tn-stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:pan-y}
+.tn-ui{position:relative;height:100%;display:flex;flex-direction:column;justify-content:space-between;padding-block:28px 24px;pointer-events:none}
+.tn-top,.tn-bottom{display:flex;justify-content:space-between;gap:20px}
+.tn-top{align-items:flex-start}
+.tn-bottom{align-items:flex-end}
+.tn-title{font-family:var(--f-display);font-weight:800;font-size:clamp(30px,4.2vw,56px);line-height:.95;text-transform:uppercase;margin-top:8px;max-width:12ch;text-wrap:balance}
+.tn-round{display:grid;gap:5px;justify-items:end;text-align:right;font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.tn-round span{color:var(--fg)}
+.tn-round b{color:var(--gold);font-weight:600}
+.tn-hint{margin:0;font-size:12.5px;color:var(--muted);max-width:38ch}
+.tn-champ{text-align:right;font-family:var(--f-display);font-weight:800;font-size:clamp(26px,3.6vw,44px);line-height:1;text-transform:uppercase;opacity:0}
+.tn-champ small{display:block;margin-bottom:6px;font-family:var(--f-mono);font-size:10.5px;font-weight:600;letter-spacing:.12em;color:var(--gold)}
+@media (max-width:760px){.tn-top{flex-direction:column;gap:10px}.tn-round{justify-items:start;text-align:left}.tn-bottom{flex-direction:column;align-items:flex-start}.tn-champ{text-align:left}}
+
+/* event clips, composited with screen so their black drops out */
+.fx{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;mix-blend-mode:screen;pointer-events:none;z-index:55;opacity:0}
+.fx-local{position:absolute;z-index:2}
+.seed-table{position:relative}
 .draw-side{display:grid;justify-items:end;gap:10px;text-align:right}
 .draw-steps{display:flex;gap:6px}
 .draw-steps i{display:block;width:34px;height:3px;background:var(--line-2);overflow:hidden;border-radius:2px}
@@ -387,14 +414,20 @@ footer a:hover{text-decoration-color:var(--gold)}
 
   <section class="draw" id="draw" aria-labelledby="drawCap1">
     <div class="draw-stage" id="drawStage">
+      <canvas class="flight" id="flightCanvas" aria-hidden="true"></canvas>
       <div class="wrap">
         <div class="draw-top">
           <div>
-            <div class="kicker" data-i18n="draw.k"></div>
+            <div class="draw-kick">
+              <div class="kicker fl" data-i18n="fl.k"></div>
+              <div class="kicker st" data-i18n="draw.k"></div>
+            </div>
             <div class="draw-caps">
-              <div class="draw-cap" id="drawCap1" data-i18n="draw.s1"></div>
-              <div class="draw-cap" data-i18n="draw.s2"></div>
-              <div class="draw-cap" data-i18n="draw.s3"></div>
+              <div class="draw-cap fl" data-i18n="fl.c1"></div>
+              <div class="draw-cap fl" data-i18n="fl.c2"></div>
+              <div class="draw-cap st" id="drawCap1" data-i18n="draw.s1"></div>
+              <div class="draw-cap st" data-i18n="draw.s2"></div>
+              <div class="draw-cap st" data-i18n="draw.s3"></div>
             </div>
           </div>
           <div class="draw-side">
@@ -474,6 +507,25 @@ footer a:hover{text-decoration-color:var(--gold)}
       <div class="bk-stage" id="bkStage" data-lenis-prevent><div class="bracket" id="bk"></div></div>
       <div class="mb" id="bkm" hidden></div>
       <div class="places" id="places"></div>
+    </div>
+  </section>
+
+  <section class="tunnel" id="tunnel" aria-labelledby="tnTitle">
+    <div class="tn-stage" id="tnStage">
+      <canvas id="tnCanvas" aria-hidden="true"></canvas>
+      <div class="wrap tn-ui">
+        <div class="tn-top">
+          <div>
+            <div class="kicker" data-i18n="tn.k"></div>
+            <div class="tn-title" id="tnTitle" data-i18n="tn.h"></div>
+          </div>
+          <div class="tn-round"><span id="tnRound"></span><b id="tnProg"></b></div>
+        </div>
+        <div class="tn-bottom">
+          <p class="tn-hint" id="tnHint"></p>
+          <div class="tn-champ" id="tnChamp"></div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -607,6 +659,8 @@ en: {
   'draw.k':"From field to bracket", 'draw.s1':"16 players qualified.", 'draw.s2':"Each one gets a seed.", 'draw.s3':"Eight matchups open the bracket.",
   'draw.note':"Shown: scenario “{n}”. Seeding isn't official yet.", 'draw.cta':"Compare scenarios",
   'bk.swipe':"Swipe or tap a round. Tap a player to send them through.",
+  'fl.k':"Shanghai · 31.23° N, 121.47° E", 'fl.c1':"Night over the Huangpu.", 'fl.c2':"One stage. Sixteen players.",
+  'tn.k':"Flythrough", 'tn.h':"Your road to the title", 'tn.hintClick':"Click a player to pick the winner. Keep scrolling to reach the Grand Final.", 'tn.hintTap':"Tap a player to pick the winner. Keep scrolling to reach the Grand Final.", 'tn.open':"still open",
   'ft.noteK':"Note", 'ft.note':"Unofficial fan hub, not affiliated with Supercell. World Finals seeding hasn't been announced yet. Scenario weights are an estimate based on previous years, not an official figure. Venue per rulebook v2.7.",
   'ft.srcK':"Sources", 'ft.rulebook':"CRL 2026 rulebook v2.7 (PDF)", 'ft.x':"Clash Royale Esports on X · lineup update Sep 11",
 },
@@ -665,6 +719,8 @@ de: {
   'draw.k':"Vom Feld zum Bracket", 'draw.s1':"16 Spieler qualifiziert.", 'draw.s2':"Jeder bekommt einen Seed.", 'draw.s3':"Acht Duelle eröffnen das Bracket.",
   'draw.note':"Gezeigt: Szenario „{n}“. Das Seeding ist noch nicht offiziell.", 'draw.cta':"Szenarien vergleichen",
   'bk.swipe':"Wische oder tippe auf eine Runde. Tippe auf einen Spieler, um ihn weiterzuschicken.",
+  'fl.k':"Shanghai · 31,23° N, 121,47° O", 'fl.c1':"Nacht über dem Huangpu.", 'fl.c2':"Eine Bühne. Sechzehn Spieler.",
+  'tn.k':"Durchflug", 'tn.h':"Dein Weg zum Titel", 'tn.hintClick':"Klick auf einen Spieler setzt den Sieger. Scrolle weiter bis zum Grand Final.", 'tn.hintTap':"Tippe auf einen Spieler, um den Sieger zu setzen. Scrolle weiter bis zum Grand Final.", 'tn.open':"noch offen",
   'ft.noteK':"Hinweis", 'ft.note':"Inoffizieller Fan-Hub ohne Verbindung zu Supercell. Das Seeding der World Finals ist noch nicht veröffentlicht. Die Szenario-Gewichte sind eine Einschätzung aus den Vorjahren, keine offizielle Angabe. Venue laut Regelwerk v2.7.",
   'ft.srcK':"Quellen", 'ft.rulebook':"CRL 2026 Regelwerk v2.7 (PDF)", 'ft.x':"Clash Royale Esports auf X · Lineup-Update vom 11.09.",
 },
@@ -723,6 +779,8 @@ fr: {
   'draw.k':"Du plateau au bracket", 'draw.s1':"16 joueurs qualifiés.", 'draw.s2':"Chacun reçoit un seed.", 'draw.s3':"Huit duels ouvrent le bracket.",
   'draw.note':"Affiché : scénario « {n} ». Le seeding n'est pas encore officiel.", 'draw.cta':"Comparer les scénarios",
   'bk.swipe':"Fais glisser ou touche un tour. Touche un joueur pour le qualifier.",
+  'fl.k':"Shanghai · 31,23° N, 121,47° E", 'fl.c1':"La nuit sur le Huangpu.", 'fl.c2':"Une scène. Seize joueurs.",
+  'tn.k':"Survol", 'tn.h':"Ta route vers le titre", 'tn.hintClick':"Clique sur un joueur pour choisir le vainqueur. Continue à défiler jusqu'à la grande finale.", 'tn.hintTap':"Touche un joueur pour choisir le vainqueur. Continue à défiler jusqu'à la grande finale.", 'tn.open':"encore ouvert",
   'ft.noteK':"Remarque", 'ft.note':"Hub de fans non officiel, sans lien avec Supercell. Le seeding des World Finals n'est pas encore annoncé. Les poids des scénarios sont une estimation fondée sur les années précédentes, pas une donnée officielle. Lieu selon le règlement v2.7.",
   'ft.srcK':"Sources", 'ft.rulebook':"Règlement CRL 2026 v2.7 (PDF)", 'ft.x':"Clash Royale Esports sur X · mise à jour du lineup du 11/09",
 },
@@ -781,6 +839,8 @@ it: {
   'draw.k':"Dai partecipanti al bracket", 'draw.s1':"16 giocatori qualificati.", 'draw.s2':"Ognuno riceve un seed.", 'draw.s3':"Otto sfide aprono il bracket.",
   'draw.note':"Mostrato: scenario “{n}”. Il seeding non è ancora ufficiale.", 'draw.cta':"Confronta gli scenari",
   'bk.swipe':"Scorri o tocca un turno. Tocca un giocatore per farlo avanzare.",
+  'fl.k':"Shanghai · 31,23° N, 121,47° E", 'fl.c1':"Notte sullo Huangpu.", 'fl.c2':"Un palco. Sedici giocatori.",
+  'tn.k':"Sorvolo", 'tn.h':"La tua strada verso il titolo", 'tn.hintClick':"Clicca un giocatore per scegliere il vincitore. Continua a scorrere fino alla gran finale.", 'tn.hintTap':"Tocca un giocatore per scegliere il vincitore. Continua a scorrere fino alla gran finale.", 'tn.open':"ancora aperto",
   'ft.noteK':"Nota", 'ft.note':"Hub non ufficiale dei fan, senza legami con Supercell. Il seeding delle World Finals non è ancora stato annunciato. I pesi degli scenari sono una stima basata sugli anni precedenti, non un dato ufficiale. Sede secondo il regolamento v2.7.",
   'ft.srcK':"Fonti", 'ft.rulebook':"Regolamento CRL 2026 v2.7 (PDF)", 'ft.x':"Clash Royale Esports su X · aggiornamento lineup dell'11/09",
 },
@@ -1056,15 +1116,91 @@ function reveals() {
   gsap.from('.wordmark', {yPercent:40, opacity:0, duration:1, ease:'power3.out', scrollTrigger:{trigger:'footer', start:'top 92%', once:true}});
 }
 
-/* ---------- draw: the field becomes the bracket ---------- */
+/* ---------- flight: an AI camera move, scrubbed frame by frame ---------- */
+const FLIGHT_SETS = {
+  d:{dir:'assets/flight/d/', n:108, crop:null},
+  m:{dir:'assets/flight/m/', n:88, crop:[740 / 2560, 1080 / 2560]},   // phone frames are a centred 3:4 crop
+};
+// the sixteen glowing stage panels in the last frame, normalised to the full 16:9 frame: cx, cy, w, h
+const FLIGHT_PANELS = [[.4281,.4208,.0375,.0194],[.4758,.4208,.0359,.0194],[.5242,.4208,.0359,.0194],[.5719,.4208,.0375,.0194],
+  [.4219,.4528,.0406,.0222],[.4727,.4528,.0391,.0222],[.5266,.4528,.0375,.0222],[.5781,.4528,.0406,.0222],
+  [.4133,.4917,.0453,.0278],[.4703,.4917,.0437,.0278],[.5289,.4917,.0422,.0278],[.5852,.4917,.0453,.0278],
+  [.4031,.5389,.0531,.0389],[.4664,.5375,.0484,.0361],[.5328,.5375,.0469,.0361],[.5938,.5375,.05,.0361]];
+const FL = {set:null, imgs:[], ok:null, want:0, last:-1, cv:null, ctx:null, all:false};
+const flightSet = () => window.innerWidth <= 760 ? FLIGHT_SETS.m : FLIGHT_SETS.d;
+function flightPrepare() {
+  FL.cv = FL.cv || $('#flightCanvas');
+  FL.ctx = FL.ctx || FL.cv.getContext('2d');
+  const set = flightSet();
+  if (FL.set === set) return;
+  FL.set = set; FL.imgs = new Array(set.n); FL.ok = new Uint8Array(set.n); FL.last = -1; FL.all = false;
+  flightLoad([0, set.n - 1]);
+}
+function flightLoad(list) {
+  const set = FL.set;
+  list.forEach(i => {
+    if (FL.imgs[i]) return;
+    const im = new Image();
+    im.decoding = 'async';
+    im.onload = () => {
+      if (FL.set !== set) return;
+      FL.ok[i] = 1;
+      if (FL.last < 0 || Math.abs(i - FL.want) < Math.abs(FL.last - FL.want)) flightDraw(FL.want, true);
+    };
+    im.src = set.dir + 'f' + String(i + 1).padStart(3, '0') + '.webp';
+    FL.imgs[i] = im;
+  });
+}
+// coarse to fine, so a fast scroller still sees motion while the rest streams in
+function flightLoadAll() {
+  if (FL.all || !FL.set) return;
+  FL.all = true;
+  const n = FL.set.n, order = [], seen = new Uint8Array(n);
+  for (const step of [16, 8, 4, 2, 1]) for (let i = 0; i < n; i += step) if (!seen[i]) { seen[i] = 1; order.push(i); }
+  let k = 0;
+  const pump = () => { flightLoad(order.slice(k, k + 10)); k += 10; if (k < order.length) setTimeout(pump, 40); };
+  pump();
+}
+function flightSize() {
+  if (!FL.cv) return;
+  const r = FL.cv.getBoundingClientRect(), dpr = Math.min(2, window.devicePixelRatio || 1);
+  FL.cv.width = Math.max(1, Math.round(r.width * dpr));
+  FL.cv.height = Math.max(1, Math.round(r.height * dpr));
+  flightDraw(FL.want, true);
+}
+function flightDraw(i, force) {
+  FL.want = i;
+  if (!FL.ctx || !FL.set) return;
+  const n = FL.set.n;
+  let j = -1;
+  for (let d = 0; d < n; d++) { if (FL.ok[i - d]) { j = i - d; break; } if (FL.ok[i + d]) { j = i + d; break; } }
+  if (j < 0 || (j === FL.last && !force)) return;
+  FL.last = j;
+  const im = FL.imgs[j], W = FL.cv.width, H = FL.cv.height;
+  const s = Math.max(W / im.naturalWidth, H / im.naturalHeight), w = im.naturalWidth * s, h = im.naturalHeight * s;
+  FL.ctx.drawImage(im, (W - w) / 2, (H - h) / 2, w, h);
+}
+// where stage panel k sits on screen, in the coordinates of the draw field
+function panelRect(k, field) {
+  const set = FL.set || flightSet(), sr = $('#flightCanvas').getBoundingClientRect(), fr = field.getBoundingClientRect();
+  const [cx, cy, pw, ph] = FLIGHT_PANELS[k];
+  const iw = set.crop ? 3 : 16, ih = set.crop ? 4 : 9;
+  const s = Math.max(sr.width / iw, sr.height / ih), fw = iw * s, fh = ih * s;
+  const ox = (sr.width - fw) / 2, oy = (sr.height - fh) / 2;
+  const nx = set.crop ? (cx - set.crop[0]) / set.crop[1] : cx, nw = set.crop ? pw / set.crop[1] : pw;
+  return {x:ox + nx * fw - (fr.left - sr.left), y:oy + cy * fh - (fr.top - sr.top), w:nw * fw, h:ph * fh};
+}
+
+/* ---------- draw: the stage becomes the field, the field becomes the bracket ---------- */
 let drawTL = null, drawW = 0;
 function buildDraw() {
-  const field = $('#drawField'), stage = $('#drawStage');
+  const field = $('#drawField'), stage = $('#drawStage'), cv = $('#flightCanvas'), side = $('.draw-side');
   if (drawTL) { drawTL.scrollTrigger && drawTL.scrollTrigger.kill(); drawTL.kill(); drawTL = null; }
   field.innerHTML = '';
   drawW = window.innerWidth;
   $('#drawNote').innerHTML = `${esc(t('draw.note', {n:scenName(state.scen)}))} <a href="#seeding">${t('draw.cta')}</a>`;
-  const caps = [...document.querySelectorAll('.draw-cap')], fills = [...document.querySelectorAll('.draw-steps b')];
+  const flCaps = [...document.querySelectorAll('.draw-cap.fl')], caps = [...document.querySelectorAll('.draw-cap.st')];
+  const kicks = [...document.querySelectorAll('.draw-kick .kicker')], fills = [...document.querySelectorAll('.draw-steps b')];
 
   const seeds = seedsNow();
   const mobile = window.innerWidth <= 760;
@@ -1102,21 +1238,46 @@ function buildDraw() {
   });
 
   if (!anim || !hasST) {
-    // static end state: the eight matchups
+    // static end state: the eight matchups, no flight
+    cv.style.display = 'none';
     tiles.forEach(({d, n}) => { const [m, s] = matchOf(n); d.style.transform = `translate(${px(m)}px, ${py(m, s)}px)`; d.querySelector('.ds').style.opacity = 1; });
     labels.forEach(l => l.style.opacity = 1);
+    flCaps.forEach(c => c.style.opacity = 0);
     caps.forEach((c, i) => c.style.opacity = i === 2 ? 1 : 0);
+    kicks[0].style.opacity = 0; kicks[1].style.opacity = 1;
     fills.forEach(f => f.style.transform = 'scaleX(1)');
     return;
   }
 
-  tiles.forEach(({d, k}) => gsap.set(d, {x:gx(k), y:gy(k)}));
-  gsap.set(caps, {opacity:i => i === 0 ? 1 : 0, y:0});
+  flightPrepare();
+  flightSize();
+  const fly = mobile ? 1.5 : 1.8;   // timeline units spent on the camera move
+  // every tile starts on one of the sixteen glowing panels of the stage
+  tiles.forEach(({d, k}) => {
+    const p = panelRect(k, field);
+    gsap.set(d, {x:p.x - tileW / 2, y:p.y - tileH / 2, scale:Math.max(.03, p.w / tileW), opacity:0, transformOrigin:'50% 50%'});
+  });
+  gsap.set(flCaps, {opacity:i => i === 0 ? 1 : 0, y:0});
+  gsap.set(caps, {opacity:0, y:0});
+  gsap.set(kicks, {opacity:i => i === 0 ? 1 : 0});
   gsap.set(fills, {scaleX:i => i === 0 ? 1 : 0});
-  gsap.set(labels, {opacity:0});
+  gsap.set([side, ...labels], {opacity:0});
+  gsap.set(cv, {opacity:1});
 
-  const tl = gsap.timeline({scrollTrigger:{trigger:stage, start:() => `top ${hh()}px`, end:'+=230%', pin:true, scrub:.6, anticipatePin:1, refreshPriority:1}});
-  tl.to({}, {duration:.35})
+  const fr = {f:0};
+  const tl = gsap.timeline({scrollTrigger:{trigger:stage, start:() => `top ${hh()}px`, end:() => '+=' + (window.innerWidth <= 760 ? 380 : 470) + '%', pin:true, scrub:.5, anticipatePin:1, refreshPriority:2, onToggle:self => self.isActive && flightLoadAll()}});
+  tl.to(fr, {f:FL.set.n - 1, duration:fly, ease:'none', onUpdate:() => flightDraw(Math.round(fr.f))}, 0)
+    .to(flCaps[0], {opacity:0, y:-18, duration:.18}, fly * .42)
+    .fromTo(flCaps[1], {opacity:0, y:18}, {opacity:1, y:0, duration:.18}, fly * .42 + .1)
+    .addLabel('b', fly)
+    .to(flCaps[1], {opacity:0, y:-18, duration:.18}, 'b')
+    .to(kicks[0], {opacity:0, duration:.15}, 'b')
+    .to(kicks[1], {opacity:1, duration:.15}, 'b+=.1')
+    .fromTo(caps[0], {opacity:0, y:18}, {opacity:1, y:0, duration:.2}, 'b+=.12')
+    .to(side, {opacity:1, duration:.2}, 'b+=.15')
+    .to(cv, {opacity:.16, duration:.5, ease:'power1.in'}, 'b');
+  tiles.forEach(({d, k}) => tl.to(d, {x:gx(k), y:gy(k), scale:1, opacity:1, duration:.55, ease:'power2.inOut'}, `b+=${.04 + k * .012}`));
+  tl.to({}, {duration:.3})
     .addLabel('s2')
     .to(caps[0], {opacity:0, y:-18, duration:.2}, 's2')
     .fromTo(caps[1], {opacity:0, y:18}, {opacity:1, y:0, duration:.2}, 's2+=.12')
@@ -1217,7 +1378,7 @@ function setScen(id, quiet) {
   renderSeeds(true); renderSide(); renderStrips();
   fillBracket('fav');
   buildDraw();
-  if (!quiet) toast(t('t.scen', {n:scenName(id)}));
+  if (!quiet) { toast(t('t.scen', {n:scenName(id)})); playFx('sweep'); }
 }
 
 function makeRows() {
@@ -1240,6 +1401,7 @@ function onSeedClick(n) {
   state.sel = null; state.custom = s;
   setScen('X', true);
   toast(t('t.swap', {p:pair}));
+  playFx('sweep');
 }
 function renderSeeds(flip) {
   const seeds = seedsNow(), L = $('#seedList');
@@ -1393,6 +1555,7 @@ function renderBracket(cascade) {
   $('#bkStage').hidden = phone; $('#bkm').hidden = !phone;
   if (phone) renderPhone(R, seeds, cascade); else renderDesk(R, seeds, cascade);
   renderPlaces(R);
+  if (TN.on) tnUpdate(R, seeds);
 }
 
 function renderDesk(R, seeds, cascade) {
@@ -1538,10 +1701,339 @@ function hlPlayer(n) {
   B.querySelectorAll('path').forEach(e => { if (e.dataset.p === n) e.classList.add('hl'); });
 }
 function pick(id, n) {
+  const before = resolve(seedsNow(), {...state.picks});
   if (state.picks[id] === n) delete state.picks[id]; else state.picks[id] = n;
   delete state.scores[id];
   state.lastPick = state.picks[id] ? id : null;
   renderBracket('step');
+  const after = resolve(seedsNow(), {...state.picks});
+  if (after.champ && after.champ !== before.champ) setTimeout(() => playFx('confetti'), 300);
+  else if (after.slots.GR && !before.slots.GR) playFx('sparks');
+}
+
+/* ---------- event clips: AI-generated on black, composited with screen ---------- */
+const FX = {};
+function fxInit() {
+  if (!anim) return;
+  const mk = (name, host) => {
+    const v = document.createElement('video');
+    v.className = 'fx' + (host ? ' fx-local' : '');
+    v.muted = true; v.defaultMuted = true; v.playsInline = true;
+    v.setAttribute('playsinline', ''); v.setAttribute('muted', ''); v.setAttribute('aria-hidden', 'true');
+    v.preload = 'auto'; v.src = `assets/fx/${name}.mp4`;
+    (host || document.body).appendChild(v);
+    FX[name] = v;
+  };
+  mk('confetti'); mk('sparks'); mk('sweep', $('.seed-table'));
+}
+function playFx(name) {
+  const v = FX[name];
+  if (!v) return;
+  gsap.killTweensOf(v);
+  try { v.currentTime = 0; } catch (e) {}
+  gsap.set(v, {opacity:1});
+  const p = v.play();
+  if (p && p.catch) p.catch(() => gsap.set(v, {opacity:0}));
+  v.onended = () => gsap.to(v, {opacity:0, duration:.3});
+}
+
+/* ---------- flythrough: the bracket as a tunnel of rounds (three.js) ---------- */
+const TN = {on:false, p:0, target:0, visible:false, lastTick:0, fired:false, wv:0};
+const TN_SP = 15;                                     // depth between two rounds
+const TN_WAVES = [];
+ORDER.forEach(id => { const w = WAVE[id] - 1; (TN_WAVES[w] = TN_WAVES[w] || []).push(id); });
+const TN_HEX = {gt:'#F3B53A', lb:'#5B93FF', cn:'#F2605A', lcq:'#3FC9B0', cm:'#A9B1C3'};
+const tnZ = w => -(w - 1) * TN_SP;                    // w is 1-based; the Grand Final sits in round 8
+function tunnelSetup() {
+  if (!anim || !hasST || !window.WebGLRenderingContext) { $('#tunnel').hidden = true; return; }
+  TN.st = ScrollTrigger.create({
+    trigger:'#tnStage', start:() => `top ${hh()}px`, end:() => '+=' + (window.innerWidth <= 760 ? 430 : 540) + '%',
+    pin:true, anticipatePin:1, refreshPriority:1,
+    onUpdate:self => {
+      TN.target = self.progress;
+      // no animation frames (background tab): render the scroll position directly
+      if (TN.on && performance.now() - TN.lastTick > 150) { TN.p = TN.target; tnRender(); }
+    },
+  });
+  tnHint();
+  new IntersectionObserver(es => es.forEach(e => {
+    TN.visible = e.isIntersecting;
+    if (e.isIntersecting && !TN.loading) tnLoad();
+  }), {rootMargin:'900px 0px'}).observe($('#tnStage'));
+}
+const tnHint = () => { $('#tnHint').textContent = t(window.matchMedia('(hover: none)').matches ? 'tn.hintTap' : 'tn.hintClick'); };
+function tnFail(err) {
+  if (err) console.error(err);
+  $('#tunnel').hidden = true;
+  if (TN.st) TN.st.kill();
+  ScrollTrigger.refresh();
+}
+function tnLoad() {
+  TN.loading = true;
+  const go = () => { try { tunnelGL(); } catch (err) { tnFail(err); } };
+  if (window.THREE) return go();
+  const s = document.createElement('script');
+  s.src = 'https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js';
+  s.onload = go;
+  s.onerror = () => tnFail();
+  document.head.appendChild(s);
+}
+function tunnelGL() {
+  const cv = $('#tnCanvas');
+  const r = new THREE.WebGLRenderer({canvas:cv, antialias:true, powerPreference:'high-performance'});
+  r.setClearColor(0x0B0F18, 1);
+  TN.r = r;
+  TN.S = window.innerWidth <= 760 ? 1 : 1.5;             // texture scale
+  TN.scene = new THREE.Scene();
+  TN.scene.fog = new THREE.Fog(0x0B0F18, 14, 74);
+  TN.cam = new THREE.PerspectiveCamera(55, 1, .1, 300);
+  TN.cards = {}; TN.meshes = [];
+  const aniso = Math.min(8, r.capabilities.getMaxAnisotropy());
+  ORDER.forEach(id => {
+    const c = document.createElement('canvas');
+    c.width = Math.round(512 * TN.S); c.height = Math.round(200 * TN.S);
+    const tex = new THREE.CanvasTexture(c);
+    tex.anisotropy = aniso;
+    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 200 / 512), new THREE.MeshBasicMaterial({map:tex, transparent:true}));
+    mesh.userData.id = id;
+    TN.scene.add(mesh); TN.meshes.push(mesh);
+    TN.cards[id] = {mesh, c, ctx:c.getContext('2d'), tex};
+  });
+  // drifting dust gives the depth something to read against
+  const N = 1400, pos = new Float32Array(N * 3), zMin = tnZ(8) - 40;
+  for (let i = 0; i < N; i++) {
+    pos[i * 3] = (Math.random() - .5) * 36;
+    pos[i * 3 + 1] = (Math.random() - .5) * 26;
+    pos[i * 3 + 2] = zMin + Math.random() * (40 - zMin);
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  TN.scene.add(new THREE.Points(g, new THREE.PointsMaterial({color:0x3A4766, size:.07})));
+  TN.lines = new THREE.Group(); TN.scene.add(TN.lines);
+  TN.rings = new THREE.Group(); TN.scene.add(TN.rings);
+  TN.ray = new THREE.Raycaster(); TN.ndc = new THREE.Vector2(); TN.look = new THREE.Vector3();
+  cv.addEventListener('pointermove', tnHover);
+  cv.addEventListener('click', tnClick);
+  TN.on = true;
+  tnResize();
+  gsap.ticker.add(tnTick);
+  window.addEventListener('resize', () => { clearTimeout(TN.rz); TN.rz = setTimeout(tnResize, 150); });
+}
+function tnResize() {
+  const st = $('#tnStage'), w = st.clientWidth, h = st.clientHeight;
+  TN.r.setPixelRatio(Math.min(window.devicePixelRatio || 1, w <= 760 ? 1.5 : 2));
+  TN.r.setSize(w, h, false);
+  TN.cam.aspect = w / h;
+  TN.cam.updateProjectionMatrix();
+  TN.aspect = w / h;
+  tnLayout();
+  tnUpdate();
+}
+// upper bracket above the camera lane, lower bracket below; one ring per round
+function tnLayout() {
+  const a = TN.aspect, cols = a < .72;
+  const cw = cols ? Math.min(3.6, (13.5 * a - .5) / 2) : 3.9, ch = cw * 200 / 512;
+  TN.cols = cols; TN.cw = cw; TN.pos = {};
+  const Rx = 7.2 * Math.min(1.15, Math.max(.85, a / 1.6)), Ry = 5.4;
+  TN_WAVES.forEach((ids, wi) => {
+    const z = tnZ(Math.min(wi + 1, 8));
+    const up = ids.filter(id => id[0] === 'U'), lo = ids.filter(id => id[0] === 'L');
+    if (cols) {
+      const pitch = ch + .42, x0 = cw / 2 + .6;
+      const place = (list, dir, centred) => {
+        const rows = Math.ceil(list.length / 2);
+        list.forEach((id, i) => {
+          const row = Math.floor(i / 2), x = list.length === 1 ? 0 : (i % 2 ? x0 : -x0);
+          const y = centred ? ((rows - 1) / 2 - row) * pitch : dir * (pitch * .5 + .55 + row * pitch);
+          TN.pos[id] = new THREE.Vector3(x, y, z);
+        });
+      };
+      if (up.length && !lo.length && wi === 0) place(up, 1, true);
+      else { place(up, 1); place(lo, -1); }
+    } else {
+      const arc = (list, mid, sign) => {
+        const n = list.length, span = n === 1 ? 0 : Math.min(130, 45 * (n - 1));
+        list.forEach((id, i) => {
+          const rad = (n === 1 ? mid : mid + sign * (span / 2 - i * span / (n - 1))) * Math.PI / 180;
+          TN.pos[id] = new THREE.Vector3(Math.cos(rad) * Rx, Math.sin(rad) * Ry, z);
+        });
+      };
+      if (wi === 0) up.forEach((id, i) => { const rad = (90 - i * 45) * Math.PI / 180; TN.pos[id] = new THREE.Vector3(Math.cos(rad) * Rx, Math.sin(rad) * Ry, z); });
+      else { arc(up, 90, 1); arc(lo, 270, -1); }
+    }
+  });
+  // faint ring per round, the tunnel's ribs
+  TN.rings.children.slice().forEach(o => { TN.rings.remove(o); o.geometry.dispose(); o.material.dispose(); });
+  const rx = cols ? cw + 1.6 : Rx + 2.4, ry = cols ? 5.2 : Ry + 1.8;
+  for (let w = 1; w <= 8; w++) {
+    const pts = new THREE.EllipseCurve(0, 0, rx, ry, 0, Math.PI * 2).getPoints(96).map(p => new THREE.Vector3(p.x, p.y, tnZ(w)));
+    TN.rings.add(new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({color:w === 8 ? 0x3A3016 : 0x1B2438})));
+  }
+}
+function tnRR(ctx, x, y, w, h, r) {
+  ctx.beginPath(); ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+}
+function tnFit(ctx, txt, max) {
+  if (ctx.measureText(txt).width <= max) return txt;
+  while (txt.length > 1 && ctx.measureText(txt + '…').width > max) txt = txt.slice(0, -1);
+  return txt + '…';
+}
+function tnDraw(id, R, seeds) {
+  const {ctx, c, tex} = TN.cards[id], S = TN.S, m = M[id], s = R.slots[id] || [null, null], w = R.win[id];
+  const W = c.width, H = c.height, LH = 34 * S, fin = id === 'GF' || id === 'GR';
+  ctx.clearRect(0, 0, W, H);
+  ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
+  ctx.font = `600 ${17 * S}px "JetBrains Mono", ui-monospace, monospace`;
+  ctx.fillStyle = fin ? '#F3B53A' : '#8C97AE';
+  ctx.fillText(`${m.lab} · Bo${m.bo}`, 3 * S, LH / 2);
+  const bx = 2 * S, by = LH, bw = W - 4 * S, bh = H - LH - 2 * S, rh = bh / 2;
+  tnRR(ctx, bx, by, bw, bh, 12 * S); ctx.fillStyle = '#0B0F18'; ctx.fill();
+  ctx.save(); tnRR(ctx, bx, by, bw, bh, 12 * S); ctx.clip();
+  [0, 1].forEach(i => {
+    const y = by + i * rh, n = s[i], cy = y + rh / 2;
+    if (n && w === n) { ctx.fillStyle = '#182033'; ctx.fillRect(bx, y, bw, rh); }
+    if (i === 1) { ctx.fillStyle = '#232D44'; ctx.fillRect(bx, y, bw, 2 * S); }
+    if (!n) {
+      ctx.fillStyle = '#5E6984'; ctx.font = `400 ${21 * S}px "Instrument Sans", system-ui, sans-serif`;
+      ctx.fillText(tnFit(ctx, id === 'GR' ? t('bk.grPh') : placeholder(m.src[i]), bw - 40 * S), 24 * S, cy);
+      return;
+    }
+    ctx.fillStyle = TN_HEX[P[n].cat]; ctx.fillRect(bx, y, 8 * S, rh);
+    ctx.fillStyle = '#5E6984'; ctx.font = `400 ${21 * S}px "JetBrains Mono", ui-monospace, monospace`;
+    ctx.textAlign = 'right'; ctx.fillText(String(seeds.indexOf(n) + 1), 56 * S, cy); ctx.textAlign = 'left';
+    let badge = '';
+    if (w) { const sc = state.scores[id]; badge = sc ? String(sc[i]) : (w === n ? 'W' : ''); }
+    ctx.fillStyle = w && w !== n ? '#5E6984' : '#E9EDF5';
+    ctx.font = `${w === n ? 600 : 500} ${30 * S}px "Instrument Sans", system-ui, sans-serif`;
+    ctx.fillText(tnFit(ctx, n, bw - 72 * S - (badge ? 64 * S : 16 * S)), 70 * S, cy + S);
+    if (badge) {
+      ctx.font = `600 ${20 * S}px "JetBrains Mono", ui-monospace, monospace`;
+      const pw = ctx.measureText(badge).width + 16 * S, ph = 30 * S, px = bx + bw - pw - 14 * S;
+      if (w === n) { tnRR(ctx, px, cy - ph / 2, pw, ph, 5 * S); ctx.fillStyle = '#F3B53A'; ctx.fill(); ctx.fillStyle = '#0B0F18'; }
+      else ctx.fillStyle = '#5E6984';
+      ctx.textAlign = 'center'; ctx.fillText(badge, px + pw / 2, cy + S); ctx.textAlign = 'left';
+    }
+  });
+  ctx.restore();
+  tnRR(ctx, bx, by, bw, bh, 12 * S); ctx.lineWidth = 2 * S; ctx.strokeStyle = fin ? '#F3B53A' : '#34405C'; ctx.stroke();
+  tex.needsUpdate = true;
+}
+function tnUpdate(R, seeds) {
+  if (!TN.on) return;
+  seeds = seeds || seedsNow();
+  R = R || resolve(seeds, state.picks);
+  TN.R = R;
+  // the finals: centred, or side by side (stacked on phones) once a reset is needed
+  const grOn = !!R.slots.GR, a = TN.aspect, zF = tnZ(8);
+  const sF = TN.cols ? Math.min(1.35, (7.8 * a * .86) / TN.cw) * (grOn ? .92 : 1) : (grOn ? 1.2 : 1.5);
+  const fw = TN.cw * sF, fh = fw * 200 / 512;
+  TN.fh = fh;
+  if (!grOn) TN.pos.GF = new THREE.Vector3(0, 0, zF);
+  else if (TN.cols) { TN.pos.GF = new THREE.Vector3(0, fh / 2 + .3, zF); TN.pos.GR = new THREE.Vector3(0, -(fh / 2 + .3), zF); }
+  else { TN.pos.GF = new THREE.Vector3(-(fw / 2 + .35), 0, zF); TN.pos.GR = new THREE.Vector3(fw / 2 + .35, 0, zF); }
+  for (const id of ORDER) {
+    const card = TN.cards[id], vis = id !== 'GR' || grOn;
+    card.mesh.visible = vis;
+    if (!vis) continue;
+    const k = id === 'GF' || id === 'GR' ? sF : 1;
+    card.mesh.scale.set(TN.cw * k, TN.cw * k, 1);
+    card.mesh.position.copy(TN.pos[id]);
+    tnDraw(id, R, seeds);
+  }
+  tnLinks(R);
+  $('#tnChamp').innerHTML = R.champ ? `<small>${t('pc.champ')}</small>${esc(R.champ)}` : `<small>Grand Final</small>${t('tn.open')}`;
+  TN.wv = 0;
+  tnRender();
+}
+// lines between rounds: gold for the champion's road, light for decided, dark for open, red dashes for drops
+function tnLinks(R) {
+  TN.lines.children.slice().forEach(o => { TN.lines.remove(o); o.geometry.dispose(); o.material.dispose(); });
+  const add = (a, b, kind) => {
+    const A = TN.pos[a], B = TN.pos[b];
+    if (!A || !B) return;
+    const flat = Math.abs(A.z - B.z) < .5, dz = (A.z - B.z) * .45, fin = b === 'GF' || b === 'GR';
+    // links into the final arrive from above or below, so they never run through the camera on its last stretch
+    const up = A.y >= 0 ? 1 : -1, lift = TN.cols ? 6.5 : 3.4;
+    const c1 = flat ? A.clone().add(new THREE.Vector3(0, 1.8, 0)) : A.clone().add(new THREE.Vector3(0, fin ? up * 2 : 0, -dz * (fin ? .6 : 1)));
+    const c2 = flat ? B.clone().add(new THREE.Vector3(0, 1.8, 0))
+      : fin ? B.clone().add(new THREE.Vector3(Math.sign(A.x) * 2.2, up * lift, -.6))
+      : B.clone().add(new THREE.Vector3(0, 0, dz));
+    // both ends sit just behind the cards; into the final the road lands on the card's top or bottom edge
+    const end = fin && !flat ? B.clone().add(new THREE.Vector3(0, up * TN.fh * .45, -.06)) : B.clone().add(new THREE.Vector3(0, 0, -.05));
+    const curve = new THREE.CubicBezierCurve3(A.clone().add(new THREE.Vector3(0, 0, -.05)), c1, c2, end);
+    if (kind === 'champ') {
+      TN.lines.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 48, .036, 6, false), new THREE.MeshBasicMaterial({color:0xF3B53A})));
+      return;
+    }
+    const geo = new THREE.BufferGeometry().setFromPoints(curve.getPoints(40));
+    const mat = kind === 'drop'
+      ? new THREE.LineDashedMaterial({color:0xF2605A, dashSize:.35, gapSize:.25, transparent:true, opacity:.5})
+      : new THREE.LineBasicMaterial({color:kind === 'won' ? 0x8C97AE : 0x2A3550});
+    const line = new THREE.Line(geo, mat);
+    if (kind === 'drop') line.computeLineDistances();
+    TN.lines.add(line);
+  };
+  const grOn = !!R.slots.GR;
+  for (const id of ORDER) {
+    if (id === 'GR') continue;
+    const nx = nextOf(id) || (id === 'GF' && grOn ? ['GR', 0] : null);
+    if (nx) add(id, nx[0], R.win[id] ? (R.champ && R.win[id] === R.champ ? 'champ' : 'won') : 'open');
+    const dr = dropOf(id);
+    if (dr && R.lose[id]) add(id, dr[0], 'drop');
+  }
+}
+function tnWaveLabel(w, gr) {
+  const U = k => `Upper · ${t(k)}`, L = k => `Lower · ${t(k)}`;
+  return [U('bk.r1'), `${U('bk.qf')} + ${L('bk.r1')}`, `${U('bk.sf')} + ${L('bk.r2')}`, `Upper Final + ${L('bk.r3')}`,
+    L('bk.qf'), L('bk.sf'), 'Lower Final', gr ? 'Grand Final + Reset' : 'Grand Final'][w - 1];
+}
+function tnTick(time) {
+  if (!TN.visible) return;
+  TN.lastTick = performance.now();
+  TN.time = time;
+  TN.p += (TN.target - TN.p) * .12;
+  tnRender();
+}
+function tnRender() {
+  if (!TN.on || !TN.R) return;
+  const p = Math.min(1, Math.max(0, TN.p)), tt = TN.time || 0;
+  const z0 = 15, z1 = tnZ(8) + 7.5, z = z0 + (z1 - z0) * p;
+  const k = 1 - Math.min(1, p / .92);                       // sway fades out before the final
+  const x = Math.sin(p * 9) * .9 * k + Math.sin(tt * .5) * .08 * k;
+  const y = Math.sin(p * 6.5 + 1) * .5 * k + Math.cos(tt * .4) * .06 * k;
+  TN.cam.position.set(x, y, z);
+  const e = Math.max(0, Math.min(1, (p - .8) / .2)), sm = e * e * (3 - 2 * e);
+  TN.look.set(x * .3 * (1 - sm), y * .3 * (1 - sm), (z - 25) * (1 - sm) + tnZ(8) * sm);
+  TN.cam.lookAt(TN.look);
+  TN.cam.rotateZ(Math.sin(p * 5) * .05 * k);                 // a slight bank through the turns
+  TN.r.render(TN.scene, TN.cam);
+  const wv = Math.max(1, Math.min(8, Math.floor((1 - z) / TN_SP) + 2));
+  if (wv !== TN.wv) { TN.wv = wv; $('#tnRound').textContent = tnWaveLabel(wv, !!TN.R.slots.GR); $('#tnProg').textContent = `${wv} / 8`; }
+  $('#tnChamp').style.opacity = Math.max(0, Math.min(1, (p - .86) / .08));
+  if (p > .975 && TN.R.champ && !TN.fired) { TN.fired = true; playFx('confetti'); }
+  if (p < .9) TN.fired = false;
+}
+function tnHit(e) {
+  const r = TN.r.domElement.getBoundingClientRect();
+  TN.ndc.set((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1);
+  TN.ray.setFromCamera(TN.ndc, TN.cam);
+  const hit = TN.ray.intersectObjects(TN.meshes.filter(m => m.visible), false)[0];
+  if (!hit || !hit.uv) return null;
+  const id = hit.object.userData.id, H = TN.cards[id].c.height, S = TN.S, LH = 34 * S, rh = (H - LH - 2 * S) / 2;
+  const py = (1 - hit.uv.y) * H;
+  if (py < LH) return null;
+  const s = TN.R.slots[id];
+  if (!s || !s[0] || !s[1]) return null;
+  return {id, n:s[py < LH + rh ? 0 : 1]};
+}
+function tnClick(e) { const h = tnHit(e); if (h) pick(h.id, h.n); }
+function tnHover(e) {
+  if (TN.hov) return;
+  TN.hov = true;
+  setTimeout(() => { TN.hov = false; }, 60);
+  TN.r.domElement.style.cursor = tnHit(e) ? 'pointer' : '';
 }
 function renderPlaces(R) {
   const lose = ids => ids.map(i => R.lose[i]).filter(Boolean);
@@ -1608,7 +2100,7 @@ function setLang(l) {
   if (l === 'en') u.searchParams.delete('lang'); else u.searchParams.set('lang', l);
   try { history.replaceState(null, '', u); } catch (e) {}
   applyStatic(); headline(false); heroMix(); tick();
-  roster(); scenLabels(); renderSeeds(false); renderSide(false); renderStrips(); catLegend(); renderBracket(false); buildDraw();
+  roster(); scenLabels(); renderSeeds(false); renderSide(false); renderStrips(); catLegend(); renderBracket(false); buildDraw(); tnHint();
   requestAnimationFrame(() => { moveInd(true); navOn(); });
 }
 
@@ -1624,11 +2116,14 @@ $('#inheritToggle').addEventListener('click', e => {
   state.custom = null;
   setScen(state.scen, true);
   toast(t(state.inherit ? 't.inhOn' : 't.inhOff'));
+  playFx('sweep');
 });
 $('#bFav').addEventListener('click', () => { fillBracket('fav'); toast(t('t.seeds')); });
-$('#bSim').addEventListener('click', () => { fillBracket('sim'); toast(t('t.rand', {n:resolve(seedsNow(), state.picks).champ})); });
+$('#bSim').addEventListener('click', () => { fillBracket('sim'); toast(t('t.rand', {n:resolve(seedsNow(), state.picks).champ})); setTimeout(() => playFx('confetti'), 1400); });
 $('#bClr').addEventListener('click', () => { fillBracket('clear'); toast(t('t.clear')); });
+fxInit();
 setScen('A', true);
+tunnelSetup();
 nav();
 reveals();
 requestAnimationFrame(() => moveInd(true));
@@ -1637,7 +2132,9 @@ window.addEventListener('resize', () => {
   clearTimeout(rsz);
   rsz = setTimeout(() => { setHH(); if (window.innerWidth !== drawW) buildDraw(); }, 200);
 });
-if (document.fonts) document.fonts.ready.then(() => { buildDraw(); });
+if (document.fonts) document.fonts.ready.then(() => { buildDraw(); if (TN.on) tnUpdate(); });
+// start streaming the flight frames once the page itself has loaded
+window.addEventListener('load', () => setTimeout(flightLoadAll, 600));
 })();
 </script>
 </body>

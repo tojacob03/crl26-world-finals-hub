@@ -5,8 +5,14 @@ Unofficial fan hub for the Clash Royale League 2026 World Finals (Shanghai, Nove
 - Countdown to day 1
 - All 16 qualified players
 - Seeding scenarios derived from previous years, with round 1 matchups
-- Interactive double elimination bracket
+- Scroll-scrubbed camera flight over the Huangpu into the arena; the sixteen stage panels turn into the draw
+- Interactive double elimination bracket, plus a 3D flythrough of it (three.js) that you can click to pick winners
+- Short event clips for the champion, a bracket reset and scenario changes
 
 Languages: English (default), Deutsch, Français, Italiano. Link a language directly with `?lang=de`, `?lang=fr` or `?lang=it`.
 
-A single static `index.html`, served with GitHub Pages. Not affiliated with Supercell.
+A single static `index.html` plus `assets/`, served with GitHub Pages.
+
+Credits: hero and Grand Final artwork from the Supercell Fan Kit. The flight (`assets/flight/`) and the clips in `assets/fx/` were generated with Higgsfield (MiniMax H3, Grok Video) from text prompts and contain no Supercell assets.
+
+This material is unofficial and is not endorsed by Supercell. For more information see Supercell's Fan Content Policy: www.supercell.com/fan-content-policy.
