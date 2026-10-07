@@ -61,7 +61,17 @@ button{font:inherit;color:inherit}
 .lang button:hover{color:var(--fg)}
 .lang button.on{background:var(--surface-2);color:var(--gold)}
 @media (max-width:860px){.brand span{display:none}.top .wrap{gap:10px}}
-@media (max-width:640px){.nav a{padding:7px 8px;font-size:12.5px}}
+.menu-btn{display:none;margin-left:auto;border:1px solid var(--line-2);background:var(--surface);border-radius:8px;padding:6px 12px;font-size:13px;font-weight:500;cursor:pointer}
+/* phones: the section links fold into a text menu under the bar */
+@media (max-width:640px){
+  .menu-btn{display:inline-flex}
+  .nav{position:absolute;top:100%;left:0;right:0;margin:0;display:none;flex-direction:column;gap:0;padding:6px 16px 14px;background:var(--bg);border-bottom:1px solid var(--line);overflow:visible}
+  .top.open .nav{display:flex}
+  .nav .pill{display:none}
+  .nav a{padding:13px 2px;font-size:16px;border-radius:0;border-bottom:1px solid var(--line)}
+  .nav a:last-of-type{border-bottom:0}
+  .nav a.on{color:var(--gold)}
+}
 
 /* hero */
 .hero{position:relative;border-bottom:1px solid var(--line);overflow:hidden}
@@ -374,6 +384,7 @@ footer a:hover{text-decoration-color:var(--gold)}
       <a href="#bracket" data-i18n="nav.bracket">Bracket</a>
       <a href="#format" data-i18n="nav.format">Format</a>
     </nav>
+    <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="nav" data-i18n="nav.menu">Menu</button>
     <div class="lang" id="lang" role="group" aria-label="Language"></div>
   </div>
 </header>
@@ -605,7 +616,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':
 const LANGS = ['en','de','fr','it'];
 const I18N = {
 en: {
-  'nav.countdown':"Countdown", 'nav.players':"Players", 'nav.seeding':"Seeding", 'nav.bracket':"Bracket", 'nav.format':"Format",
+  'nav.countdown':"Countdown", 'nav.players':"Players", 'nav.seeding':"Seeding", 'nav.bracket':"Bracket", 'nav.format':"Format", 'nav.menu':"Menu", 
   'hero.title':"Sixteen players. One title. Shanghai.",
   'hero.lede':"<b>November 6–8, 2026</b> at the Shanghai Huangpu Inner Bund Culture Center (per rulebook). Double elimination, manual duels, Bo3, Bo5 from the upper final on. Seeding hasn't been announced yet. This hub plays through the most likely variants.",
   'cd.toStart':"Until day 1 in Shanghai", 'cd.toEnd':"Until the end of day 3", 'cd.over':"The World Finals are over",
@@ -665,7 +676,7 @@ en: {
   'ft.srcK':"Sources", 'ft.rulebook':"CRL 2026 rulebook v2.7 (PDF)", 'ft.x':"Clash Royale Esports on X · lineup update Sep 11",
 },
 de: {
-  'nav.countdown':"Countdown", 'nav.players':"Teilnehmer", 'nav.seeding':"Seeding", 'nav.bracket':"Bracket", 'nav.format':"Format",
+  'nav.countdown':"Countdown", 'nav.players':"Teilnehmer", 'nav.seeding':"Seeding", 'nav.bracket':"Bracket", 'nav.format':"Format", 'nav.menu':"Menü", 
   'hero.title':"Sechzehn Spieler. Ein Titel. Shanghai.",
   'hero.lede':"<b>6. bis 8. November 2026</b> im Shanghai Huangpu Inner Bund Culture Center (laut Regelwerk). Double Elimination, Manual Duels, Bo3, ab Upper Final Bo5. Das Seeding ist noch nicht offiziell. Dieser Hub spielt die wahrscheinlichsten Varianten durch.",
   'cd.toStart':"Bis Tag 1 in Shanghai", 'cd.toEnd':"Bis zum Ende von Tag 3", 'cd.over':"Die World Finals sind vorbei",
@@ -725,7 +736,7 @@ de: {
   'ft.srcK':"Quellen", 'ft.rulebook':"CRL 2026 Regelwerk v2.7 (PDF)", 'ft.x':"Clash Royale Esports auf X · Lineup-Update vom 11.09.",
 },
 fr: {
-  'nav.countdown':"Compte à rebours", 'nav.players':"Joueurs", 'nav.seeding':"Seeding", 'nav.bracket':"Bracket", 'nav.format':"Format",
+  'nav.countdown':"Compte à rebours", 'nav.players':"Joueurs", 'nav.seeding':"Seeding", 'nav.bracket':"Bracket", 'nav.format':"Format", 'nav.menu':"Menu", 
   'hero.title':"Seize joueurs. Un titre. Shanghai.",
   'hero.lede':"<b>Du 6 au 8 novembre 2026</b> au Shanghai Huangpu Inner Bund Culture Center (selon le règlement). Double élimination, Manual Duels, Bo3, Bo5 à partir de la finale de l'upper bracket. Le seeding n'est pas encore officiel. Ce hub explore les variantes les plus probables.",
   'cd.toStart':"Jusqu'au jour 1 à Shanghai", 'cd.toEnd':"Jusqu'à la fin du jour 3", 'cd.over':"Les World Finals sont terminées",
@@ -785,7 +796,7 @@ fr: {
   'ft.srcK':"Sources", 'ft.rulebook':"Règlement CRL 2026 v2.7 (PDF)", 'ft.x':"Clash Royale Esports sur X · mise à jour du lineup du 11/09",
 },
 it: {
-  'nav.countdown':"Countdown", 'nav.players':"Giocatori", 'nav.seeding':"Seeding", 'nav.bracket':"Bracket", 'nav.format':"Formato",
+  'nav.countdown':"Countdown", 'nav.players':"Giocatori", 'nav.seeding':"Seeding", 'nav.bracket':"Bracket", 'nav.format':"Formato", 'nav.menu':"Menu", 
   'hero.title':"Sedici giocatori. Un titolo. Shanghai.",
   'hero.lede':"<b>6–8 novembre 2026</b> allo Shanghai Huangpu Inner Bund Culture Center (secondo il regolamento). Doppia eliminazione, Manual Duels, Bo3, Bo5 dalla finale dell'upper bracket. Il seeding non è ancora ufficiale. Questo hub esplora le varianti più probabili.",
   'cd.toStart':"Al giorno 1 a Shanghai", 'cd.toEnd':"Alla fine del giorno 3", 'cd.over':"Le World Finals sono concluse",
@@ -2059,6 +2070,11 @@ function renderPlaces(R) {
 /* ---------- nav ---------- */
 let navOn = () => {};
 function nav() {
+  const top = $('.top'), btn = $('#menuBtn');
+  const setOpen = o => { top.classList.toggle('open', o); btn.setAttribute('aria-expanded', o); };
+  btn.addEventListener('click', () => setOpen(!top.classList.contains('open')));
+  $('#nav').addEventListener('click', e => { if (e.target.closest('a')) setOpen(false); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') setOpen(false); });
   const N = $('#nav'), pill = N.querySelector('.pill'), links = [...N.querySelectorAll('a')];
   const secs = links.map(a => document.querySelector(a.getAttribute('href')));
   const setOn = i => {
