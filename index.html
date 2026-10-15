@@ -201,7 +201,26 @@ h2{font-family:var(--f-display);font-weight:800;font-size:clamp(34px,4.4vw,52px)
 .pc.out .note{font-size:12px;color:var(--gold);margin-top:3px}
 
 /* seeding */
-.seed-layout{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:16px;align-items:start}
+.seed-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;align-items:start}
+.forecasts{margin-top:18px}
+.forecasts summary{cursor:pointer;color:var(--muted);font-size:13.5px;padding:10px 2px;list-style:none}
+.forecasts summary::before{content:'+ ';color:var(--gold)}
+.forecasts[open] summary::before{content:'– '}
+.forecasts summary:hover{color:var(--fg)}
+.pz-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);gap:16px;align-items:start}
+@media (max-width:900px){.pz-layout{grid-template-columns:1fr}}
+.pz-big{font-family:var(--f-display);font-size:clamp(56px,8vw,96px);line-height:.95;color:var(--gold)}
+.pz-facts{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:10px}
+.pz-facts li{display:flex;justify-content:space-between;gap:12px;border-top:1px solid var(--line);padding-top:10px;font-size:13.5px;color:var(--muted)}
+.pz-facts b{color:var(--fg);font-weight:600;font-variant-numeric:tabular-nums}
+.pz-rows{display:grid;gap:10px}
+.pz-row{display:grid;grid-template-columns:5.5em minmax(0,1fr) 8.5em;gap:12px;align-items:center;font-size:13.5px}
+.pz-row .pl{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.pz-row .bar{height:10px;background:var(--line);border-radius:5px;overflow:hidden}
+.pz-row .bar i{display:block;height:100%;background:var(--gold);border-radius:5px}
+.pz-row .amt{text-align:right;font-variant-numeric:tabular-nums}
+.pz-row .amt small{display:block;color:var(--dim);font-size:11px}
+.pz-src{margin-top:14px}
 @media (max-width:1000px){.seed-layout{grid-template-columns:1fr}}
 .tabs{position:relative;display:flex;gap:4px;padding:4px;background:var(--surface);border-radius:11px;overflow-x:auto;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
@@ -380,6 +399,7 @@ footer a:hover{text-decoration-color:var(--gold)}
       <i class="pill"></i>
       <a href="#top" data-i18n="nav.countdown">Countdown</a>
       <a href="#players" data-i18n="nav.players">Players</a>
+      <a href="#prize" data-i18n="nav.prize">Prize money</a>
       <a href="#seeding" data-i18n="nav.seeding">Seeding</a>
       <a href="#bracket" data-i18n="nav.bracket">Bracket</a>
       <a href="#format" data-i18n="nav.format">Format</a>
@@ -461,6 +481,23 @@ footer a:hover{text-decoration-color:var(--gold)}
     </div>
   </section>
 
+  <section class="sec" id="prize">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><div class="kicker" data-i18n="pz.kicker"></div><h2 data-i18n="pz.h2"></h2></div>
+        <p data-i18n="pz.p"></p>
+      </div>
+      <div class="pz-layout">
+        <div class="panel pz-total">
+          <div class="pz-big">$500,000</div>
+          <p class="sub" data-i18n="pz.totalSub"></p>
+          <ul class="pz-facts" id="pzFacts"></ul>
+        </div>
+        <div class="panel"><div class="pz-rows" id="pzRows"></div><p class="sub pz-src" data-i18n="pz.src"></p></div>
+      </div>
+    </div>
+  </section>
+
   <section class="sec" id="seeding">
     <div class="wrap">
       <div class="sec-head">
@@ -483,21 +520,22 @@ footer a:hover{text-decoration-color:var(--gold)}
           </div>
           <p class="swap-hint" data-i18n="sd.swap"></p>
         </div>
-        <div class="side">
-          <div class="panel">
-            <h3 data-i18n="sd.duelsH"></h3>
-            <p class="sub" data-i18n="sd.duelsSub"></p>
-            <div id="duels"></div>
-          </div>
-        </div>
       </div>
 
+      <details class="forecasts">
+        <summary data-i18n="fc.sum"></summary>
+        <div class="panel" style="margin-top:12px">
+          <h3 data-i18n="sd.duelsH"></h3>
+          <p class="sub" data-i18n="sd.duelsSub"></p>
+          <div id="duels"></div>
+        </div>
       <div class="panel strips">
         <h3 data-i18n="sd.stripsH"></h3>
         <p class="sub" data-i18n="sd.stripsSub"></p>
         <div class="strip-scroll" data-lenis-prevent><div class="strip-tbl" id="strips"></div></div>
         <div class="cat-legend" id="catLegend"></div>
       </div>
+      </details>
     </div>
   </section>
 
@@ -616,6 +654,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':
 const LANGS = ['en','de','fr','it'];
 const I18N = {
 en: {
+  'nav.prize':'Prize money', 'pz.kicker':'Prize money', 'pz.h2':'Who gets what', 'pz.p':'Every player in Shanghai takes home at least $5,000. The champion gets 40% of the pool.', 'pz.totalSub':'Total prize pool, gross, per World Finals ruleset v1', 'pz.each':'each · {n} players', 'pz.f1':"Champion's share", 'pz.f2':'Top 4 together', 'pz.f3':'Places 9 to 16 together', 'pz.f4':'Minimum per player', 'pz.src':'Gross amounts in USD. Players pay their own fees and taxes.', 'fc.sum':'My seeding forecasts from before the official seeding',
   'nav.countdown':"Countdown", 'nav.players':"Players", 'nav.seeding':"Seeding", 'nav.bracket':"Bracket", 'nav.format':"Format", 'nav.menu':"Menu", 
   'hero.title':"Sixteen players. One title. Shanghai.",
   'hero.lede':"<b>November 6–8, 2026</b> at the Shanghai Huangpu Inner Bund Culture Center (per rulebook). Double elimination, manual duels, Bo3, Bo5 from the upper final on. Starts daily at 03:00 UTC (11:00 in Shanghai). Seeding and bracket are official since ruleset v1 of 12 October.",
@@ -623,7 +662,7 @@ en: {
   'cd.sCount':"Countdown", 'cd.sLive':"Live", 'cd.sOver':"Ended",
   'cd.days':"Days", 'cd.hours':"Hours", 'cd.mins':"Minutes", 'cd.secs':"Seconds",
   'cd.d1':"<b>Fri, Nov 6</b>Day 1", 'cd.d2':"<b>Sat, Nov 7</b>Day 2", 'cd.d3':"<b>Sun, Nov 8</b>Day 3 · Grand Final",
-  'cd.note':"Counting to 00:00 Shanghai time (UTC+8) on November 6. The start time of the first match hasn't been published yet.",
+  'cd.note':"Counting to the first match: November 6, 11:00 in Shanghai (03:00 UTC). All three days start at that time.",
   'pl.kicker':"Players", 'pl.h2':"The field is set",
   'pl.p':"Five Monthly Final winners, eight players via the CRL leaderboard, two from the Champions Cup China and the LCQ winner. Asaf withdrew on September 11. Under rule 4.1.6.2, LCQ runner-up JorZ takes his place.",
   'g.gtSub':"Winners of the five Monthly Finals, April to August",
@@ -676,6 +715,7 @@ en: {
   'ft.srcK':"Sources", 'ft.rulebook':"CRL 2026 rulebook v2.7 (PDF)", 'ft.x':"Clash Royale Esports on X · lineup update Sep 11",
 },
 de: {
+  'nav.prize':'Preisgeld', 'pz.kicker':'Preisgeld', 'pz.h2':'Wer was bekommt', 'pz.p':'Jeder Spieler in Shanghai nimmt mindestens 5.000 $ mit. Der Champion bekommt 40 % des Topfs.', 'pz.totalSub':'Gesamtpreisgeld, brutto, laut World-Finals-Regelwerk v1', 'pz.each':'pro Kopf · {n}×', 'pz.f1':'Anteil des Champions', 'pz.f2':'Top 4 zusammen', 'pz.f3':'Plätze 9 bis 16 zusammen', 'pz.f4':'Mindestens pro Spieler', 'pz.src':'Bruttobeträge in USD. Gebühren und Steuern tragen die Spieler selbst.', 'fc.sum':'Meine Seeding-Prognosen von vor dem offiziellen Seeding',
   'nav.countdown':"Countdown", 'nav.players':"Teilnehmer", 'nav.seeding':"Seeding", 'nav.bracket':"Bracket", 'nav.format':"Format", 'nav.menu':"Menü", 
   'hero.title':"Sechzehn Spieler. Ein Titel. Shanghai.",
   'hero.lede':"<b>6. bis 8. November 2026</b> im Shanghai Huangpu Inner Bund Culture Center (laut Regelwerk). Double Elimination, Manual Duels, Bo3, ab Upper Final Bo5. Start täglich um 03:00 UTC (11:00 Uhr in Shanghai). Seeding und Bracket sind seit Regelwerk v1 vom 12. Oktober offiziell.",
@@ -683,7 +723,7 @@ de: {
   'cd.sCount':"Countdown", 'cd.sLive':"Läuft", 'cd.sOver':"Beendet",
   'cd.days':"Tage", 'cd.hours':"Stunden", 'cd.mins':"Minuten", 'cd.secs':"Sekunden",
   'cd.d1':"<b>Fr 6. Nov</b>Tag 1", 'cd.d2':"<b>Sa 7. Nov</b>Tag 2", 'cd.d3':"<b>So 8. Nov</b>Tag 3 · Grand Final",
-  'cd.note':"Gezählt bis 00:00 Uhr Shanghai-Zeit (UTC+8) am 6. November. Die Startzeit der ersten Partie ist noch nicht veröffentlicht.",
+  'cd.note':"Gezählt bis zum ersten Match: 6. November, 11:00 Uhr in Shanghai (03:00 UTC, 04:00 Uhr deutscher Zeit). Alle drei Tage beginnen um diese Zeit.",
   'pl.kicker':"Teilnehmer", 'pl.h2':"Das Feld steht",
   'pl.p':"Fünf Monthly-Final-Sieger, acht Spieler über das CRL-Leaderboard, zwei aus dem Champions Cup China und der LCQ-Sieger. Asaf hat am 11. September abgesagt. Laut Regel 4.1.6.2 rückt der LCQ-Zweite JorZ nach.",
   'g.gtSub':"Sieger der fünf Monthly Finals, April bis August",
@@ -736,6 +776,7 @@ de: {
   'ft.srcK':"Quellen", 'ft.rulebook':"CRL 2026 Regelwerk v2.7 (PDF)", 'ft.x':"Clash Royale Esports auf X · Lineup-Update vom 11.09.",
 },
 fr: {
+  'nav.prize':'Cash prize', 'pz.kicker':'Cash prize', 'pz.h2':'Qui touche quoi', 'pz.p':'Chaque joueur à Shanghai repart avec au moins 5 000 $. Le champion touche 40 % de la cagnotte.', 'pz.totalSub':'Cash prize total, brut, selon le règlement v1 des World Finals', 'pz.each':'chacun · {n}×', 'pz.f1':'Part du champion', 'pz.f2':'Top 4 ensemble', 'pz.f3':'Places 9 à 16 ensemble', 'pz.f4':'Minimum par joueur', 'pz.src':'Montants bruts en USD. Frais et impôts à la charge des joueurs.', 'fc.sum':"Mes prévisions de seeding d'avant le seeding officiel",
   'nav.countdown':"Compte à rebours", 'nav.players':"Joueurs", 'nav.seeding':"Seeding", 'nav.bracket':"Bracket", 'nav.format':"Format", 'nav.menu':"Menu", 
   'hero.title':"Seize joueurs. Un titre. Shanghai.",
   'hero.lede':"<b>Du 6 au 8 novembre 2026</b> au Shanghai Huangpu Inner Bund Culture Center (selon le règlement). Double élimination, Manual Duels, Bo3, Bo5 à partir de la finale de l'upper bracket. Début chaque jour à 03:00 UTC (11:00 à Shanghai). Seeding et bracket officiels depuis le règlement v1 du 12 octobre.",
@@ -743,7 +784,7 @@ fr: {
   'cd.sCount':"Compte à rebours", 'cd.sLive':"En cours", 'cd.sOver':"Terminé",
   'cd.days':"Jours", 'cd.hours':"Heures", 'cd.mins':"Minutes", 'cd.secs':"Secondes",
   'cd.d1':"<b>Ven. 6 nov.</b>Jour 1", 'cd.d2':"<b>Sam. 7 nov.</b>Jour 2", 'cd.d3':"<b>Dim. 8 nov.</b>Jour 3 · Grande finale",
-  'cd.note':"Décompte jusqu'à 00:00, heure de Shanghai (UTC+8), le 6 novembre. L'heure du premier match n'a pas encore été publiée.",
+  'cd.note':"Décompte jusqu'au premier match : 6 novembre, 11:00 à Shanghai (03:00 UTC). Les trois jours commencent à cette heure.",
   'pl.kicker':"Joueurs", 'pl.h2':"Le plateau est complet",
   'pl.p':"Cinq vainqueurs de Monthly Final, huit joueurs via le classement CRL, deux issus de la Champions Cup Chine et le vainqueur du LCQ. Asaf s'est retiré le 11 septembre. Selon la règle 4.1.6.2, JorZ, finaliste du LCQ, prend sa place.",
   'g.gtSub':"Vainqueurs des cinq Monthly Finals, d'avril à août",
@@ -796,6 +837,7 @@ fr: {
   'ft.srcK':"Sources", 'ft.rulebook':"Règlement CRL 2026 v2.7 (PDF)", 'ft.x':"Clash Royale Esports sur X · mise à jour du lineup du 11/09",
 },
 it: {
+  'nav.prize':'Montepremi', 'pz.kicker':'Montepremi', 'pz.h2':'Chi prende cosa', 'pz.p':'Ogni giocatore a Shanghai porta a casa almeno 5.000 $. Il campione prende il 40% del montepremi.', 'pz.totalSub':'Montepremi totale, lordo, secondo il regolamento v1 delle World Finals', 'pz.each':'a testa · {n}×', 'pz.f1':'Quota del campione', 'pz.f2':'Top 4 insieme', 'pz.f3':'Posti 9–16 insieme', 'pz.f4':'Minimo per giocatore', 'pz.src':'Importi lordi in USD. Commissioni e tasse a carico dei giocatori.', 'fc.sum':'Le mie previsioni di seeding prima di quello ufficiale',
   'nav.countdown':"Countdown", 'nav.players':"Giocatori", 'nav.seeding':"Seeding", 'nav.bracket':"Bracket", 'nav.format':"Formato", 'nav.menu':"Menu", 
   'hero.title':"Sedici giocatori. Un titolo. Shanghai.",
   'hero.lede':"<b>6–8 novembre 2026</b> allo Shanghai Huangpu Inner Bund Culture Center (secondo il regolamento). Doppia eliminazione, Manual Duels, Bo3, Bo5 dalla finale dell'upper bracket. Inizio ogni giorno alle 03:00 UTC (11:00 a Shanghai). Seeding e bracket ufficiali dal regolamento v1 del 12 ottobre.",
@@ -803,7 +845,7 @@ it: {
   'cd.sCount':"Countdown", 'cd.sLive':"In corso", 'cd.sOver':"Concluso",
   'cd.days':"Giorni", 'cd.hours':"Ore", 'cd.mins':"Minuti", 'cd.secs':"Secondi",
   'cd.d1':"<b>Ven 6 nov</b>Giorno 1", 'cd.d2':"<b>Sab 7 nov</b>Giorno 2", 'cd.d3':"<b>Dom 8 nov</b>Giorno 3 · Gran finale",
-  'cd.note':"Conteggio fino alle 00:00 ora di Shanghai (UTC+8) del 6 novembre. L'orario del primo match non è ancora stato pubblicato.",
+  'cd.note':"Conteggio fino al primo match: 6 novembre, 11:00 a Shanghai (03:00 UTC). Tutti e tre i giorni iniziano a quest'ora.",
   'pl.kicker':"Giocatori", 'pl.h2':"I partecipanti sono definiti",
   'pl.p':"Cinque vincitori delle Monthly Final, otto giocatori dalla classifica CRL, due dalla Champions Cup Cina e il vincitore dell'LCQ. Asaf si è ritirato l'11 settembre. In base alla regola 4.1.6.2 subentra JorZ, secondo classificato dell'LCQ.",
   'g.gtSub':"Vincitori delle cinque Monthly Final, da aprile ad agosto",
@@ -1387,12 +1429,22 @@ function moveInd(instant) {
 }
 function setScen(id, quiet) {
   state.scen = id; state.sel = null;
+  $('#inheritToggle').hidden = id === 'O';
   document.querySelectorAll('#scenTabs .tab').forEach(b => { const on = b.dataset.id === id; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); });
   scenLabels(); moveInd();
   renderSeeds(true); renderSide(); renderStrips();
   fillBracket('fav');
   buildDraw();
   if (!quiet) { toast(t('t.scen', {n:scenName(id)})); playFx('sweep'); }
+}
+
+const PRIZES = [['1', 200000, 1], ['2', 90000, 1], ['3', 50000, 1], ['4', 30000, 1], ['5–6', 20000, 2], ['7–8', 15000, 2], ['9–12', 10000, 4], ['13–16', 5000, 4]];
+function renderPrize() {
+  const fmt = n => '$' + n.toLocaleString(state.lang === 'de' ? 'de-DE' : state.lang === 'fr' ? 'fr-FR' : state.lang === 'it' ? 'it-IT' : 'en-US');
+  $('#pzRows').innerHTML = PRIZES.map(([pl, amt, n]) => `<div class="pz-row"><span class="pl">${pl}.</span><span class="bar"><i style="width:${amt / 2000}%"></i></span><span class="amt">${fmt(amt)}${n > 1 ? `<small>${t('pz.each', {n})}</small>` : ''}</span></div>`).join('');
+  const top4 = 370000, bottom8 = 60000;
+  $('#pzFacts').innerHTML = [[t('pz.f1'), '40%'], [t('pz.f2'), Math.round(top4 / 5000) + '%'], [t('pz.f3'), Math.round(bottom8 / 5000) + '%'], [t('pz.f4'), fmt(5000)]]
+    .map(([k, v]) => `<li><span>${k}</span><b>${v}</b></li>`).join('');
 }
 
 function makeRows() {
@@ -2120,14 +2172,14 @@ function setLang(l) {
   if (l === 'en') u.searchParams.delete('lang'); else u.searchParams.set('lang', l);
   try { history.replaceState(null, '', u); } catch (e) {}
   applyStatic(); headline(false); heroMix(); tick();
-  roster(); scenLabels(); renderSeeds(false); renderSide(false); renderStrips(); catLegend(); renderBracket(false); buildDraw(); tnHint();
+  roster(); renderPrize(); scenLabels(); renderSeeds(false); renderSide(false); renderStrips(); catLegend(); renderBracket(false); buildDraw(); tnHint();
   requestAnimationFrame(() => { moveInd(true); navOn(); });
 }
 
 /* ---------- boot ---------- */
 langSwitch(); applyStatic();
 setHH(); heroMix(); intro(); tick(); setInterval(tick, 1000); movingBorder(); dots(); smooth();
-roster();
+roster(); renderPrize();
 scenTabs(); makeRows(); catLegend();
 $('#inheritToggle').addEventListener('click', e => {
   state.inherit = !state.inherit;
